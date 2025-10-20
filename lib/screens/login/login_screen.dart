@@ -1,3 +1,4 @@
+import 'package:balance_psy/screens/home/P_home_screen/P_home_screen.dart';
 import 'package:balance_psy/screens/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
@@ -93,7 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Переход на главный экран
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const PsychologistHomeScreen(),
+                    ),
                   );
                 },
                 icon: Icons.arrow_forward,
