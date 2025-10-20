@@ -1,0 +1,379 @@
+//Main.dart
+
+import 'dart:io';
+import '../lib/repository.dart';
+
+const playersPath = 'data/Players.json';
+const coachesPath = 'data/Coaches.json';
+const matchesPath = 'data/Matches.json';
+const transfersPath = 'data/Transfers.json';
+
+void main() {
+  while (true) {
+    print('\n=== Футбольный клуб Челси ===');
+    print('1. Игроки');
+    print('2. Тренеры');
+    print('3. Матчи');
+    print('4. Трансферы');
+    print('0. Выход');
+    stdout.write('Выбор: ');
+    final choice = stdin.readLineSync();
+
+    switch (choice) {
+      case '1':
+        showPlayers();
+        break;
+      case '2':
+        showCoaches();
+        break;
+      case '3':
+        showMatches();
+        break;
+      case '4':
+        showTransfers();
+        break;
+      case '0':
+        exit(0);
+      default:
+        print('Неверный ввод');
+    }
+  }
+}
+
+void showPlayers() {
+  final raw = readTable(playersPath);
+  final players = raw.map((e) => Player.fromJson(e)).toList();
+  print('\n--- Игроки ---');
+  for (final p in players) {
+    print(
+        '${p.id}. ${p.name} (${p.position}), #${p.number}, ${p.age} лет, ${p.nationality}');
+  }
+}
+
+void showCoaches() {
+  final raw = readTable(coachesPath);
+  final list = raw.map((e) => Coach.fromJson(e)).toList();
+  print('\n--- Тренеры ---');
+  for (final c in list) {
+    print('${c.id}. ${c.name}, ${c.role}, ${c.age} лет, ${c.nationality}');
+  }
+}
+
+void showMatches() {
+  final raw = readTable(matchesPath);
+  final list = raw.map((e) => Match.fromJson(e)).toList();
+  print('\n--- Матчи ---');
+  for (final m in list) {
+    print(
+        '${m.id}. ${m.date} против ${m.opponent} (${m.result}) [${m.location}]');
+  }
+}
+
+void showTransfers() {
+  final raw = readTable(transfersPath);
+  final list = raw.map((e) => Transfer.fromJson(e)).toList();
+  print('\n--- Трансферы ---');
+  for (final t in list) {
+    print(
+        '${t.id}. Игрок ${t.playerId}, контракт: ${t.start} - ${t.end}, зарплата: ${t.salary}');
+  }
+}
+
+
+//data
+
+//Coaches.json
+[
+  {
+    "id": "1",
+    "name": "Энцо Мареска",
+    "role": "Главный тренер",
+    "age": 44,
+    "nationality": "Италия"
+  }
+]
+
+//Matches.json
+[
+  {
+    "id": "1",
+    "date": "2025-09-15",
+    "opponent": "Вест Хэм",
+    "result": "5:1",
+    "location": "Выезд"
+  }
+]
+
+//Transfers.json
+[
+  {
+    "id": "1",
+    "playerId": "1",
+    "start": "2023-07-01",
+    "end": "2030-06-30",
+    "salary": 8000000
+  },
+  {
+    "id": "2",
+    "playerId": "2",
+    "start": "2023-07-01",
+    "end": "2028-06-30",
+    "salary": 5000000
+  }
+
+]
+
+//Players.json
+[
+  {
+    "id": "1",
+    "name": "Коул Палмер",
+    "position": "Нападающий",
+    "age": 22,
+    "number": 10,
+    "nationality": "Англия"
+  },
+  {
+    "id": "2",
+    "name": "Педро Нету",
+    "position": "Нападающий",
+    "age": 25,
+    "number": 7,
+    "nationality": "Португалия"
+  }
+]
+
+
+//lib
+
+//io.dart
+import 'dart:io';
+
+String readLine(String prompt) {
+  stdout.write(prompt);
+  return stdin.readLineSync() ?? '';
+}
+
+
+//models.dart
+class Player {
+  String name;
+  String position;
+  int number;
+
+  Player({
+    required this.name,
+    required this.position,
+    required this.number,
+  });
+}
+
+class Coach {
+  String name;
+  int experience;
+
+  Coach({
+    required this.name,
+    required this.experience,
+  });
+}
+
+class Match {
+  String opponent;
+  String date;
+  String result;
+
+  Match({
+    required this.opponent,
+    required this.date,
+    required this.result,
+  });
+}
+
+class Contract {
+  String playerName;
+  String startDate;
+  String endDate;
+
+  Contract({
+    required this.playerName,
+    required this.startDate,
+    required this.endDate,
+  });
+}
+
+class Club {
+  String name;
+  Coach coach;
+  List<Player> players;
+  List<Match> matches;
+  List<Contract> contracts;
+
+  Club({
+    required this.name,
+    required this.coach,
+    required this.players,
+    required this.matches,
+    required this.contracts,
+  });
+}
+
+
+//repository.dart
+import 'dart:io';
+import 'dart:convert';
+
+class Player {
+  String id;
+  String name;
+  String position;
+  int age;
+  int number;
+  String nationality;
+
+  Player({
+    required this.id,
+    required this.name,
+    required this.position,
+    required this.age,
+    required this.number,
+    required this.nationality,
+  });
+
+  factory Player.fromJson(Map<String, dynamic> j) => Player(
+        id: j['id'].toString(),
+        name: j['name'] ?? '',
+        position: j['position'] ?? '',
+        age: (j['age'] ?? 0) is num
+            ? (j['age'] as num).toInt()
+            : int.tryParse(j['age'].toString()) ?? 0,
+        number: (j['number'] ?? 0) is num
+            ? (j['number'] as num).toInt()
+            : int.tryParse(j['number'].toString()) ?? 0,
+        nationality: j['nationality'] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'position': position,
+        'age': age,
+        'number': number,
+        'nationality': nationality,
+      };
+}
+
+class Coach {
+  String id;
+  String name;
+  String role;
+  int age;
+  String nationality;
+
+  Coach({
+    required this.id,
+    required this.name,
+    required this.role,
+    required this.age,
+    required this.nationality,
+  });
+
+  factory Coach.fromJson(Map<String, dynamic> j) => Coach(
+        id: j['id'].toString(),
+        name: j['name'] ?? '',
+        role: j['role'] ?? '',
+        age: (j['age'] ?? 0) is num
+            ? (j['age'] as num).toInt()
+            : int.tryParse(j['age'].toString()) ?? 0,
+        nationality: j['nationality'] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'role': role,
+        'age': age,
+        'nationality': nationality,
+      };
+}
+
+class Match {
+  String id;
+  String date;
+  String opponent;
+  String result;
+  String location;
+
+  Match({
+    required this.id,
+    required this.date,
+    required this.opponent,
+    required this.result,
+    required this.location,
+  });
+
+  factory Match.fromJson(Map<String, dynamic> j) => Match(
+        id: j['id'].toString(),
+        date: j['date'] ?? '',
+        opponent: j['opponent'] ?? '',
+        result: j['result'] ?? '',
+        location: j['location'] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': date,
+        'opponent': opponent,
+        'result': result,
+        'location': location,
+      };
+}
+
+class Transfer {
+  String id;
+  String playerId;
+  String start;
+  String end;
+  int salary;
+
+  Transfer({
+    required this.id,
+    required this.playerId,
+    required this.start,
+    required this.end,
+    required this.salary,
+  });
+
+  factory Transfer.fromJson(Map<String, dynamic> j) => Transfer(
+        id: j['id'].toString(),
+        playerId: j['playerId'].toString(),
+        start: j['start'] ?? '',
+        end: j['end'] ?? '',
+        salary: (j['salary'] ?? 0) is num
+            ? (j['salary'] as num).toInt()
+            : int.tryParse(j['salary'].toString()) ?? 0,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'playerId': playerId,
+        'start': start,
+        'end': end,
+        'salary': salary,
+      };
+}
+
+// =============== универсальные функции ===============
+
+List<Map<String, dynamic>> readTable(String path) {
+  final f = File(path);
+  if (!f.existsSync()) f.writeAsStringSync('[]');
+  final txt = f.readAsStringSync();
+  final parsed = jsonDecode(txt);
+  return List<Map<String, dynamic>>.from(parsed);
+}
+
+void writeTable(String path, List<Map<String, dynamic>> list) {
+  final f = File(path);
+  f.writeAsStringSync(JsonEncoder.withIndent('  ').convert(list));
+}

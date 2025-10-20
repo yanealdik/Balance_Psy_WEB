@@ -1,0 +1,75 @@
+name: balance_psy
+description: "A new Flutter project."
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.5
+
+  youtube_player_flutter: ^8.1.2 
+
+  flutter_svg: ^2.0.9
+
+  # HTTP + авторизация
+  dio: ^5.0.0
+
+  # Secure storage для токенов
+  flutter_secure_storage: ^8.0.0
+
+  # state management (я буду объяснять на Riverpod)
+  flutter_riverpod: ^2.3.0
+
+  # Валидация форм (опционально)
+  form_field_validator: ^1.1.0
+
+  json_annotation: ^4.8.0
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.5.0
+  json_serializable: ^6.6.0
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo/logopsy.svg
+    - assets/images/meditation.png
+    - assets/images/article/sad.png
+    - assets/images/article/depressed.png
+    - assets/images/article/love.png
+    - assets/images/article/5min.png
+    - assets/images/article/body.png
+    - assets/images/article/sleep.png
+    - assets/images/article/calm.png
+    - assets/images/article/dontAgro.png
+    - assets/images/article/empty.png
+    - assets/images/article/evening.png
+    - assets/images/article/firelove.png
+    - assets/images/article/happy.png
+    - assets/images/article/givesad.png
+    - assets/images/article/sense.png
+    - assets/images/article/whyIlove.png
+    - assets/stepimages/step1.png
+    - assets/stepimages/women.svg
+    - assets/stepimages/men.svg
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-ExtraLight.ttf
+        - asset: assets/fonts/Manrope-Light.ttf
+        - asset: assets/fonts/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope-Medium.ttf
+        - asset: assets/fonts/Manrope-Bold.ttf
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+        - asset: assets/fonts/Manrope-ExtraBold.ttf
+          weight: 700
