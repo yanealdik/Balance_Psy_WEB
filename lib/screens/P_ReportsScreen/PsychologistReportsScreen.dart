@@ -4,7 +4,7 @@ import '../../theme/app_text_styles.dart';
 
 /// Экран отчетов психолога
 class PsychologistReportsScreen extends StatefulWidget {
-  const PsychologistReportsScreen({Key? key}) : super(key: key);
+  const PsychologistReportsScreen({super.key});
 
   @override
   State<PsychologistReportsScreen> createState() =>
@@ -17,7 +17,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       'name': 'Алдияр Байділда',
       'image': 'https://i.pravatar.cc/150?img=60',
       'theme': 'Тревожность',
-      'date': DateTime.now().subtract(Duration(days: 1)),
+      'date': DateTime.now().subtract(const Duration(days: 1)),
       'content':
           'Пациент испытывает повышенную тревожность в связи с рабочими обязанностями. Проведена когнитивно-поведенческая терапия.',
       'recommendations':
@@ -27,7 +27,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       'name': 'Рамина Канатовна',
       'image': 'https://i.pravatar.cc/150?img=45',
       'theme': 'Влюбленность',
-      'date': DateTime.now().subtract(Duration(days: 3)),
+      'date': DateTime.now().subtract(const Duration(days: 3)),
       'content':
           'Обсуждены чувства пациента и способы здорового выражения эмоций в отношениях.',
       'recommendations':
@@ -37,7 +37,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       'name': 'Ажар Алимбет',
       'image': 'https://i.pravatar.cc/150?img=32',
       'theme': 'Депрессия',
-      'date': DateTime.now().subtract(Duration(days: 5)),
+      'date': DateTime.now().subtract(const Duration(days: 5)),
       'content':
           'Пациент находится в состоянии легкой депрессии. Обсуждены триггеры и методы самопомощи.',
       'recommendations':
@@ -47,7 +47,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       'name': 'Айгуль Сериккызы',
       'image': 'https://i.pravatar.cc/150?img=27',
       'theme': 'Стресс на работе',
-      'date': DateTime.now().subtract(Duration(days: 7)),
+      'date': DateTime.now().subtract(const Duration(days: 7)),
       'content':
           'Высокий уровень стресса из-за конфликтов с коллегами. Проработаны стратегии коммуникации.',
       'recommendations':
@@ -57,7 +57,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       'name': 'Нурлан Ержанов',
       'image': 'https://i.pravatar.cc/150?img=12',
       'theme': 'Семейные проблемы',
-      'date': DateTime.now().subtract(Duration(days: 10)),
+      'date': DateTime.now().subtract(const Duration(days: 10)),
       'content':
           'Обсуждены конфликты в семье и способы улучшения коммуникации с супругой.',
       'recommendations':
@@ -67,7 +67,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
 
   int get totalReports => allReports.length;
   int get weekReports {
-    final weekAgo = DateTime.now().subtract(Duration(days: 7));
+    final weekAgo = DateTime.now().subtract(const Duration(days: 7));
     return allReports.where((report) {
       return (report['date'] as DateTime).isAfter(weekAgo);
     }).length;
@@ -256,11 +256,11 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -354,7 +354,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.85,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.backgroundLight,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -362,7 +362,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
           children: [
             // Хэндл
             Container(
-              margin: EdgeInsets.only(top: 12),
+              margin: const EdgeInsets.only(top: 12),
               width: 40,
               height: 4,
               decoration: BoxDecoration(
@@ -372,7 +372,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
             ),
             // Заголовок
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                   Container(
@@ -386,7 +386,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +395,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                           report['name'],
                           style: AppTextStyles.h3.copyWith(fontSize: 20),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           _getDateString(report['date']),
                           style: AppTextStyles.body2.copyWith(fontSize: 14),
@@ -404,17 +404,17 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
             ),
-            Divider(height: 1),
+            const Divider(height: 1),
             // Контент
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -423,10 +423,10 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                       'Тема сеанса',
                       style: AppTextStyles.h3.copyWith(fontSize: 18),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -439,13 +439,13 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     // Описание сеанса
                     Text(
                       'Описание сеанса',
                       style: AppTextStyles.h3.copyWith(fontSize: 18),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       report['content'],
                       style: AppTextStyles.body1.copyWith(
@@ -453,16 +453,16 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                         height: 1.6,
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     // Рекомендации
                     Text(
                       'Рекомендации',
                       style: AppTextStyles.h3.copyWith(fontSize: 18),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.success.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -516,7 +516,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: themeController,
                 decoration: InputDecoration(
@@ -526,7 +526,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: contentController,
                 decoration: InputDecoration(
@@ -537,7 +537,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                 ),
                 maxLines: 4,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: recommendationsController,
                 decoration: InputDecoration(
@@ -582,7 +582,7 @@ class _PsychologistReportsScreenState extends State<PsychologistReportsScreen> {
                 });
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Отчет успешно добавлен'),
                     backgroundColor: AppColors.success,
                   ),
@@ -642,7 +642,7 @@ class _AllReportsScreen extends StatelessWidget {
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -651,12 +651,12 @@ class _AllReportsScreen extends StatelessWidget {
         ),
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         itemCount: reports.length,
         itemBuilder: (context, index) {
           final report = reports[index];
           return Padding(
-            padding: EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: 16),
             child: Dismissible(
               key: Key(report['name'] + index.toString()),
               direction: DismissDirection.endToStart,
@@ -664,16 +664,16 @@ class _AllReportsScreen extends StatelessWidget {
                 return await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Удалить отчет?'),
-                    content: Text('Это действие нельзя отменить.'),
+                    title: const Text('Удалить отчет?'),
+                    content: const Text('Это действие нельзя отменить.'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: Text('Отмена'),
+                        child: const Text('Отмена'),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: Text(
+                        child: const Text(
                           'Удалить',
                           style: TextStyle(color: AppColors.error),
                         ),
@@ -686,25 +686,25 @@ class _AllReportsScreen extends StatelessWidget {
                 onDelete(index);
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text('Отчет удалён')));
+                ).showSnackBar(const SnackBar(content: Text('Отчет удалён')));
               },
               background: Container(
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: 20),
+                padding: const EdgeInsets.only(right: 20),
                 decoration: BoxDecoration(
                   color: AppColors.error,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Icon(Icons.delete, color: Colors.white),
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
               child: GestureDetector(
                 onTap: () => onView(report),
                 child: Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColors.cardBackground,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: AppColors.shadow,
                         blurRadius: 10,
@@ -725,7 +725,7 @@ class _AllReportsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -734,12 +734,12 @@ class _AllReportsScreen extends StatelessWidget {
                               report['name'],
                               style: AppTextStyles.h3.copyWith(fontSize: 17),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               'Тема: ${report['theme']}',
                               style: AppTextStyles.body2.copyWith(fontSize: 13),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               _getDateString(report['date']),
                               style: AppTextStyles.body2.copyWith(
@@ -750,7 +750,7 @@ class _AllReportsScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Icon(
+                      const Icon(
                         Icons.arrow_forward_ios,
                         size: 16,
                         color: AppColors.textSecondary,

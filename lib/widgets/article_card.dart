@@ -13,14 +13,14 @@ class ArticleCard extends StatelessWidget {
   final double height;
 
   const ArticleCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.image,
     required this.category,
     required this.readTime,
     this.width = 110,
     this.height = 110,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -127,11 +127,11 @@ class HorizontalArticlesList extends StatelessWidget {
   final double cardHeight;
 
   const HorizontalArticlesList({
-    Key? key,
+    super.key,
     required this.articles,
     this.cardWidth = 110,
     this.cardHeight = 110,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -10,11 +10,11 @@ class MessageScreen extends StatefulWidget {
   final String psychologistStatus;
 
   const MessageScreen({
-    Key? key,
+    super.key,
     required this.psychologistName,
     required this.psychologistImage,
     required this.psychologistStatus,
-  }) : super(key: key);
+  });
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -35,7 +35,8 @@ class _MessageScreenState extends State<MessageScreen> {
       'time': '14:25',
     },
     {
-      'text': 'Понимаю. Давайте обсудим, что вас беспокоит. Вы можете рассказать подробнее?',
+      'text':
+          'Понимаю. Давайте обсудим, что вас беспокоит. Вы можете рассказать подробнее?',
       'isMe': false,
       'time': '14:26',
     },
@@ -109,7 +110,7 @@ class _MessageScreenState extends State<MessageScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: NetworkImage(widget.psychologistImage),
+                  image: AssetImage(widget.psychologistImage),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -195,13 +196,13 @@ class _MessageScreenState extends State<MessageScreen> {
           // Поле ввода
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.cardBackground,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.shadow,
                   blurRadius: 8,
-                  offset: const Offset(0, -2),
+                  offset: Offset(0, -2),
                 ),
               ],
             ),
@@ -212,7 +213,7 @@ class _MessageScreenState extends State<MessageScreen> {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: AppColors.background,
                       shape: BoxShape.circle,
                     ),
@@ -285,7 +286,9 @@ class _MessageScreenState extends State<MessageScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
@@ -308,20 +311,18 @@ class _MessageScreenState extends State<MessageScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isMe
-                    ? AppColors.primary
-                    : AppColors.cardBackground,
+                color: isMe ? AppColors.primary : AppColors.cardBackground,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
                   bottomLeft: Radius.circular(isMe ? 20 : 4),
                   bottomRight: Radius.circular(isMe ? 4 : 20),
                 ),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: AppColors.shadow,
                     blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    offset: Offset(0, 2),
                   ),
                 ],
               ),

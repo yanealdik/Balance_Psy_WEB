@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/custom_button.dart';
+import 'payment_screen.dart';
 
 /// Экран записи на сессию с выбором времени
 class BookingScreen extends StatefulWidget {
@@ -11,12 +12,12 @@ class BookingScreen extends StatefulWidget {
   final double rating;
 
   const BookingScreen({
-    Key? key,
+    super.key,
     required this.psychologistName,
     required this.psychologistImage,
     required this.specialty,
     required this.rating,
-  }) : super(key: key);
+  });
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
@@ -155,11 +156,14 @@ class _BookingScreenState extends State<BookingScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: NetworkImage(widget.psychologistImage),
+                image: widget.psychologistImage.startsWith('http')
+                    ? NetworkImage(widget.psychologistImage)
+                    : AssetImage(widget.psychologistImage) as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),
           ),
+
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -423,54 +427,19 @@ class _BookingScreenState extends State<BookingScreen> {
   void _confirmBooking() {
     if (selectedTime == null) return;
 
-    // Показываем диалог подтверждения
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check_circle_outline,
-                color: AppColors.success,
-                size: 32,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Заявка отправлена!',
-                style: AppTextStyles.h3.copyWith(fontSize: 18),
-              ),
-            ),
-          ],
+    // Переходим на экран оплаты
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentScreen(
+          psychologistName: widget.psychologistName,
+          psychologistImage: widget.psychologistImage,
+          sessionDate:
+              '${selectedDate.day} ${_getMonthName(selectedDate.month)}',
+          sessionTime: selectedTime!,
+          price: 8000, // TODO: Получать цену из профиля психолога
+          sessionFormat: selectedFormat,
         ),
-        content: Text(
-          'Ваша заявка отправлена специалисту ${widget.psychologistName}.\n\n'
-          'Дата: ${selectedDate.day} ${_getMonthName(selectedDate.month)}\n'
-          'Время: $selectedTime\n'
-          'Формат: ${selectedFormat == 'video' ? 'Видео-звонок' : 'Чат'}\n\n'
-          'Психолог подтвердит запись в ближайшее время.',
-          style: AppTextStyles.body1.copyWith(fontSize: 14, height: 1.5),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Закрыть диалог
-              Navigator.pop(context); // Вернуться к каталогу
-            },
-            child: Text(
-              'Понятно',
-              style: AppTextStyles.button.copyWith(color: AppColors.primary),
-            ),
-          ),
-        ],
       ),
     );
   }

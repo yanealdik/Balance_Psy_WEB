@@ -5,7 +5,7 @@ import '../../widgets/article_card.dart';
 
 /// Экран полезных статей - рефакторенная версия
 class ArticlesScreen extends StatefulWidget {
-  const ArticlesScreen({Key? key}) : super(key: key);
+  const ArticlesScreen({super.key});
 
   @override
   State<ArticlesScreen> createState() => _ArticlesScreenState();

@@ -7,7 +7,7 @@ import '../login/login_screen.dart';
 
 /// Стартовый экран с выбором действия - Новый скриншот
 class StartScreen extends StatelessWidget {
-  const StartScreen({Key? key}) : super(key: key);
+  const StartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

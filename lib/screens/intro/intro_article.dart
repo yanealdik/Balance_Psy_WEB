@@ -6,7 +6,7 @@ import '../../widgets/back_button.dart';
 
 /// Экран со статьей
 class IntroArticleScreen extends StatefulWidget {
-  const IntroArticleScreen({Key? key}) : super(key: key);
+  const IntroArticleScreen({super.key});
 
   @override
   State<IntroArticleScreen> createState() => _IntroArticleScreenState();
@@ -78,7 +78,7 @@ class _IntroArticleScreenState extends State<IntroArticleScreen> {
                     // Время чтения
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.schedule,
                           size: 16,
                           color: AppColors.textSecondary,
@@ -201,7 +201,7 @@ class _IntroArticleScreenState extends State<IntroArticleScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.arrow_downward,
                               color: AppColors.primary,
                               size: 20,

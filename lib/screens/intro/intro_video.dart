@@ -13,11 +13,11 @@ class IntroVideoScreen extends StatefulWidget {
   final String videoUrl;
 
   const IntroVideoScreen({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     required this.videoUrl,
-  }) : super(key: key);
+  });
 
   @override
   State<IntroVideoScreen> createState() => _IntroVideoScreenState();
@@ -222,7 +222,7 @@ class _IntroVideoScreenState extends State<IntroVideoScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.info_outline,
                                     color: AppColors.primary,
                                     size: 20,

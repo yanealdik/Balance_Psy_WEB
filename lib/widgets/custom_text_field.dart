@@ -16,7 +16,7 @@ class CustomTextField extends StatelessWidget {
   final int? maxLength;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.controller,
     required this.enabled,
@@ -27,7 +27,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.onChanged,
     this.maxLength,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +73,8 @@ class CustomTextField extends StatelessWidget {
                   child: Icon(Icons.check, color: AppColors.success, size: 24),
                 )
               : showEyeIcon
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 12),
+              ? const Padding(
+                  padding: EdgeInsets.only(right: 12),
                   child: Icon(
                     Icons.visibility_off_outlined,
                     color: AppColors.textTertiary,

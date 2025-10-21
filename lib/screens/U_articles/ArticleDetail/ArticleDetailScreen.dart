@@ -10,12 +10,12 @@ class ArticleDetailScreen extends StatefulWidget {
   final int? readTime;
 
   const ArticleDetailScreen({
-    Key? key,
+    super.key,
     required this.title,
     this.imageUrl,
     this.category,
     this.readTime,
-  }) : super(key: key);
+  });
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -387,7 +387,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 24),
+              const Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

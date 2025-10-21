@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_calendar.dart';
 import '../../../widgets/article_card.dart';
 import '../../../widgets/session_card.dart';
@@ -14,7 +14,7 @@ import '../../../widgets/custom_navbar.dart';
 
 /// Главный экран приложения с современным navbar
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen>
 
 /// Виджет с контентом главной страницы
 class _HomeContent extends StatefulWidget {
-  const _HomeContent({Key? key}) : super(key: key);
+  const _HomeContent({super.key});
 
   @override
   State<_HomeContent> createState() => _HomeContentState();
@@ -139,18 +139,17 @@ class _HomeContentState extends State<_HomeContent> {
                   const SizedBox(height: 30),
 
                   // Секция "Ближайшая сессия"
-                  _buildSectionHeader('Ближайшая сессия', onTap: () {}),
+                  _buildSectionHeader('Ближайшая сессия'),
 
                   const SizedBox(height: 16),
 
                   // Используем переиспользуемый виджет SessionCard
                   SessionCard(
                     psychologistName: 'Галия Аубакирова',
-                    psychologistImage: 'https://i.pravatar.cc/150?img=5',
+                    psychologistImage: 'assets/images/avatar/Galiya.png',
                     dateTime: 'Сегодня, 15:30',
                     status: 'Через 2 часа',
                     statusColor: const Color(0xFFD4A747),
-                    onVideoTap: () {},
                     onChatTap: () {
                       final homeState = context
                           .findAncestorStateOfType<_HomeScreenState>();
@@ -244,32 +243,35 @@ class _HomeContentState extends State<_HomeContent> {
           ),
 
           // Дата с иконкой
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Text(
-                  _getFormattedDate(),
-                  style: AppTextStyles.h3.copyWith(fontSize: 16),
-                ),
-                const SizedBox(width: 8),
-                const Icon(
-                  Icons.calendar_today,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-              ],
+          GestureDetector(
+            onTap: _showFullCalendar,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadow.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    _getFormattedDate(),
+                    style: AppTextStyles.h3.copyWith(fontSize: 16),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -296,7 +298,7 @@ class _HomeContentState extends State<_HomeContent> {
                     color: AppColors.textPrimary,
                     size: 24,
                   ),
-                  onPressed: () {},
+                  onPressed: _showNotifications,
                 ),
               ),
               Positioned(
@@ -425,15 +427,35 @@ class _HomeContentState extends State<_HomeContent> {
 
   Widget _buildMoodTracker() {
     final moods = [
-      {'emoji': '😊', 'label': 'Отлично', 'color': const Color(0xFF4CAF50)},
-      {'emoji': '😌', 'label': 'Хорошо', 'color': const Color(0xFF8BC34A)},
-      {'emoji': '😐', 'label': 'Норм', 'color': const Color(0xFFFFC107)},
-      {'emoji': '😔', 'label': 'Грустно', 'color': const Color(0xFFFF9800)},
-      {'emoji': '😢', 'label': 'Плохо', 'color': const Color(0xFFF44336)},
+      {
+        'image': 'assets/images/mood/mood_overjoyed.png',
+        'label': 'Отлично',
+        'color': const Color(0xFF4CAF50),
+      },
+      {
+        'image': 'assets/images/mood/mood_happy.png',
+        'label': 'Хорошо',
+        'color': const Color(0xFF8BC34A),
+      },
+      {
+        'image': 'assets/images/mood/mood_neutral.png',
+        'label': 'Норм',
+        'color': const Color(0xFFFFC107),
+      },
+      {
+        'image': 'assets/images/mood/mood_sad.png',
+        'label': 'Грустно',
+        'color': const Color(0xFFFF9800),
+      },
+      {
+        'image': 'assets/images/mood/mood_depressed.png',
+        'label': 'Плохо',
+        'color': const Color(0xFFF44336),
+      },
     ];
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
@@ -467,13 +489,32 @@ class _HomeContentState extends State<_HomeContent> {
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: (mood['color'] as Color).withOpacity(0.1),
+                        color: (mood['color'] as Color).withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
-                        child: Text(
-                          mood['emoji'] as String,
-                          style: const TextStyle(fontSize: 28),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: mood['color'] as Color,
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              mood['image'] as String,
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.sentiment_satisfied,
+                                  color: Colors.white,
+                                  size: 24,
+                                );
+                              },
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -605,6 +646,167 @@ class _HomeContentState extends State<_HomeContent> {
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  // Перемещена функция уведомлений внутрь класса
+  void _showNotifications() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            // Drag handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.textTertiary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Уведомления',
+                    style: AppTextStyles.h2.copyWith(fontSize: 24),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Отметить все как прочитанные
+                    },
+                    child: Text(
+                      'Прочитать все',
+                      style: AppTextStyles.body2.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Notifications list
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  _buildNotificationItem(
+                    icon: Icons.event,
+                    title: 'Напоминание о сессии',
+                    message: 'Сессия у Галии Аубакировой через 2 часа',
+                    time: '14:30',
+                    isUnread: true,
+                  ),
+                  _buildNotificationItem(
+                    icon: Icons.article,
+                    title: 'Новая статья',
+                    message: 'Для вас подобрана новая статья',
+                    time: 'Вчера',
+                    isUnread: false,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationItem({
+    required IconData icon,
+    required String title,
+    required String message,
+    required String time,
+    bool isUnread = false,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isUnread
+            ? AppColors.primary.withOpacity(0.05)
+            : AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isUnread
+              ? AppColors.primary.withOpacity(0.2)
+              : Colors.transparent,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTextStyles.h1.copyWith(
+                        fontSize: 15,
+                        fontWeight: isUnread
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      time,
+                      style: AppTextStyles.body2.copyWith(
+                        fontSize: 12,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: AppTextStyles.body2.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          if (isUnread)
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(left: 8),
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
       ),
     );
   }

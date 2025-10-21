@@ -5,7 +5,7 @@ import '../Message/Message_screen.dart';
 
 /// Экран чатов с психологами - Новый скриншот 3
 class ChatsScreen extends StatelessWidget {
-  const ChatsScreen({Key? key}) : super(key: key);
+  const ChatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ChatsScreen extends StatelessWidget {
         'name': 'Галия Аубакирова',
         'status': 'онлайн',
         'statusColor': AppColors.success,
-        'image': 'https://i.pravatar.cc/150?img=5',
+        'image': 'assets/images/avatar/Galiya.png',
       },
       {
         'name': 'Яна Прозорова',
@@ -93,11 +93,11 @@ class ChatsScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cardBackground,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: AppColors.shadow,
               blurRadius: 10,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -112,7 +112,9 @@ class ChatsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: NetworkImage(chat['image']),
+                      image: chat['image'].startsWith('http')
+                          ? NetworkImage(chat['image'])
+                          : AssetImage(chat['image']) as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),

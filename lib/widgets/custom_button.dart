@@ -12,14 +12,14 @@ class CustomButton extends StatelessWidget {
   final bool showArrow; // Показывать стрелку справа
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     this.onPressed,
     this.isPrimary = true,
     this.isOutlined = false,
     this.icon,
     this.showArrow = false, required bool isFullWidth,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

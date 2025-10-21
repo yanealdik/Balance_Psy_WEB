@@ -10,7 +10,7 @@ import '../register/parental_consent.dart';
 
 /// Экран онбординга Шаг 4 - Скриншот 6
 class OnboardingStep4Screen extends StatefulWidget {
-  const OnboardingStep4Screen({Key? key}) : super(key: key);
+  const OnboardingStep4Screen({super.key});
 
   @override
   State<OnboardingStep4Screen> createState() => _OnboardingStep4ScreenState();
@@ -138,13 +138,13 @@ class _OnboardingStep4ScreenState extends State<OnboardingStep4Screen> {
         child: Column(
           children: [
             // Верхняя часть с кнопкой назад и индикатором
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CustomBackButton(),
-                  const StepIndicator(currentStep: 4, totalSteps: 5),
+                  CustomBackButton(),
+                  StepIndicator(currentStep: 4, totalSteps: 5),
                 ],
               ),
             ),
@@ -277,7 +277,7 @@ class _OnboardingStep4ScreenState extends State<OnboardingStep4Screen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             color: AppColors.primary,
                             size: 20,

@@ -7,7 +7,7 @@ import '../../widgets/back_button.dart';
 
 /// Экран с медитацией
 class IntroMeditationScreen extends StatefulWidget {
-  const IntroMeditationScreen({Key? key}) : super(key: key);
+  const IntroMeditationScreen({super.key});
 
   @override
   State<IntroMeditationScreen> createState() => _IntroMeditationScreenState();
@@ -17,7 +17,7 @@ class _IntroMeditationScreenState extends State<IntroMeditationScreen>
     with SingleTickerProviderStateMixin {
   bool _isStarted = false;
   bool _isCompleted = false;
-  int _totalSeconds = 3; // 5 минут
+  final int _totalSeconds = 3; // 5 минут
   int _remainingSeconds = 300;
   Timer? _timer;
   late AnimationController _pulseController;
@@ -107,7 +107,7 @@ class _IntroMeditationScreenState extends State<IntroMeditationScreen>
   String _formatTime(int seconds) {
     final minutes = seconds ~/ 60;
     final secs = seconds % 60;
-    return '${minutes}:${secs.toString().padLeft(2, '0')}';
+    return '$minutes:${secs.toString().padLeft(2, '0')}';
   }
 
   String _getCurrentStep() {
@@ -240,17 +240,17 @@ class _IntroMeditationScreenState extends State<IntroMeditationScreen>
                         decoration: BoxDecoration(
                           color: AppColors.cardBackground,
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: AppColors.shadow,
                               blurRadius: 10,
-                              offset: const Offset(0, 4),
+                              offset: Offset(0, 4),
                             ),
                           ],
                         ),
                         child: Column(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.self_improvement,
                               size: 40,
                               color: AppColors.primary,
@@ -285,7 +285,7 @@ class _IntroMeditationScreenState extends State<IntroMeditationScreen>
                             Container(
                               width: 60,
                               height: 60,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.green,
                                 shape: BoxShape.circle,
                               ),

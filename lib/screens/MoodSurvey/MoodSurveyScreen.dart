@@ -5,7 +5,7 @@ import '../../widgets/custom_button.dart';
 
 /// Экран мини-опроса настроения
 class MoodSurveyScreen extends StatefulWidget {
-  const MoodSurveyScreen({Key? key}) : super(key: key);
+  const MoodSurveyScreen({super.key});
 
   @override
   State<MoodSurveyScreen> createState() => _MoodSurveyScreenState();
@@ -584,7 +584,8 @@ class _MoodSurveyScreenState extends State<MoodSurveyScreen> {
                       }
                     }
                   : null,
-              icon: isLastPage ? Icons.check : Icons.arrow_forward, isFullWidth: true,
+              icon: isLastPage ? Icons.check : Icons.arrow_forward,
+              isFullWidth: true,
             ),
           ),
         ],

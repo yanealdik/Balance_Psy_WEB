@@ -10,12 +10,12 @@ class CustomCalendar extends StatefulWidget {
   final bool showFullMonth; // Показать весь месяц или только неделю
 
   const CustomCalendar({
-    Key? key,
+    super.key,
     required this.selectedDate,
     required this.onDateSelected,
     this.highlightedDates,
     this.showFullMonth = false,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -310,12 +310,12 @@ class CompactCalendarCard extends StatelessWidget {
   final List<DateTime>? highlightedDates;
 
   const CompactCalendarCard({
-    Key? key,
+    super.key,
     required this.selectedDate,
     required this.onDateSelected,
     required this.onExpand,
     this.highlightedDates,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

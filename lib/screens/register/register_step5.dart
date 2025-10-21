@@ -1,3 +1,4 @@
+import 'package:balance_psy/screens/register/DiagnosticAfterReg/DiagnosticScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../theme/app_colors.dart';
@@ -10,7 +11,7 @@ import '../success/success_screen.dart';
 
 /// Экран онбординга Шаг 5 - Email и Пароль
 class OnboardingStep5Screen extends StatefulWidget {
-  const OnboardingStep5Screen({Key? key}) : super(key: key);
+  const OnboardingStep5Screen({super.key});
 
   @override
   State<OnboardingStep5Screen> createState() => _OnboardingStep5ScreenState();
@@ -78,14 +79,14 @@ class _OnboardingStep5ScreenState extends State<OnboardingStep5Screen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: const Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Код: 123456 (для теста)',
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14),
               ),
             ),
           ],
@@ -201,13 +202,13 @@ class _OnboardingStep5ScreenState extends State<OnboardingStep5Screen> {
         child: Column(
           children: [
             // Верхняя часть с кнопкой назад и индикатором
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CustomBackButton(),
-                  const StepIndicator(currentStep: 5, totalSteps: 5),
+                  CustomBackButton(),
+                  StepIndicator(currentStep: 5, totalSteps: 5),
                 ],
               ),
             ),
@@ -273,7 +274,8 @@ class _OnboardingStep5ScreenState extends State<OnboardingStep5Screen> {
                         isPrimary: true,
                         onPressed: _countdown == 0 || !_isCodeSent
                             ? _sendCode
-                            : null, isFullWidth: true,
+                            : null,
+                        isFullWidth: true,
                       ),
                     ],
 
@@ -324,7 +326,8 @@ class _OnboardingStep5ScreenState extends State<OnboardingStep5Screen> {
                       CustomButton(
                         text: 'Подтвердить',
                         isPrimary: true,
-                        onPressed: _verifyCode, isFullWidth: true,
+                        onPressed: _verifyCode,
+                        isFullWidth: true,
                       ),
                     ],
 
@@ -441,7 +444,8 @@ class _OnboardingStep5ScreenState extends State<OnboardingStep5Screen> {
                           );
                         }
                       }
-                    : null, isFullWidth: true,
+                    : null,
+                isFullWidth: true,
               ),
             ),
           ],

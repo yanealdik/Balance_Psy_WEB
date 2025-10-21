@@ -9,7 +9,7 @@ import '../register/register_step4.dart';
 
 /// Экран онбординга Шаг 3 - Скриншот 5
 class OnboardingStep3Screen extends StatefulWidget {
-  const OnboardingStep3Screen({Key? key}) : super(key: key);
+  const OnboardingStep3Screen({super.key});
 
   @override
   State<OnboardingStep3Screen> createState() => _OnboardingStep3ScreenState();
@@ -26,13 +26,13 @@ class _OnboardingStep3ScreenState extends State<OnboardingStep3Screen> {
         child: Column(
           children: [
             // Верхняя часть с кнопкой назад и индикатором
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CustomBackButton(),
-                  const StepIndicator(currentStep: 3, totalSteps: 5),
+                  CustomBackButton(),
+                  StepIndicator(currentStep: 3, totalSteps: 5),
                 ],
               ),
             ),
@@ -251,7 +251,7 @@ class _OnboardingStep3ScreenState extends State<OnboardingStep3Screen> {
                 child: Container(
                   width: 32,
                   height: 32,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),

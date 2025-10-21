@@ -7,7 +7,7 @@ import 'psychologist_profile_screen.dart';
 
 /// Экран каталога психологов - улучшенная версия
 class PsychologistsScreen extends StatefulWidget {
-  const PsychologistsScreen({Key? key}) : super(key: key);
+  const PsychologistsScreen({super.key});
 
   @override
   State<PsychologistsScreen> createState() => _PsychologistsScreenState();
@@ -33,7 +33,7 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
       'reviews': 429,
       'experience': 8,
       'price': 8000,
-      'image': 'https://i.pravatar.cc/150?img=5',
+      'image': 'assets/images/avatar/Galiya.png',
       'isOnline': true,
       'nextAvailable': 'Сегодня, 15:00',
     },
@@ -65,10 +65,9 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
 
   List<Map<String, dynamic>> get filteredPsychologists {
     return psychologists.where((psy) {
-      final matchesSearch = psy['name']
-          .toString()
-          .toLowerCase()
-          .contains(searchQuery.toLowerCase());
+      final matchesSearch = psy['name'].toString().toLowerCase().contains(
+        searchQuery.toLowerCase(),
+      );
       return matchesSearch;
     }).toList();
   }
@@ -167,16 +166,10 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
           hintStyle: AppTextStyles.body2.copyWith(
             color: AppColors.textSecondary,
           ),
-          prefixIcon: const Icon(
-            Icons.search,
-            color: AppColors.textSecondary,
-          ),
+          prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(
-                    Icons.clear,
-                    color: AppColors.textSecondary,
-                  ),
+                  icon: const Icon(Icons.clear, color: AppColors.textSecondary),
                   onPressed: () => setState(() => searchQuery = ''),
                 )
               : null,
@@ -285,9 +278,8 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PsychologistProfileScreen(
-              psychologist: psychologist,
-            ),
+            builder: (context) =>
+                PsychologistProfileScreen(psychologist: psychologist),
           ),
         );
       },
@@ -317,11 +309,16 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: NetworkImage(psychologist['image']),
+                          image:
+                              psychologist['image'].toString().startsWith('http',)
+                              ? NetworkImage(psychologist['image'])
+                              : AssetImage(psychologist['image'])
+                                    as ImageProvider,
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
+
                     if (psychologist['isOnline'])
                       Positioned(
                         right: 0,
@@ -467,7 +464,7 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
                       ),
                     ),
                   );
-                }, 
+                },
                 isFullWidth: true,
               ),
             ),
@@ -506,5 +503,5 @@ class _PsychologistsScreenState extends State<PsychologistsScreen> {
         ],
       ),
     );
-  }  
   }
+}

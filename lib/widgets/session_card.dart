@@ -15,7 +15,7 @@ class SessionCard extends StatelessWidget {
   final bool showActions;
 
   const SessionCard({
-    Key? key,
+    super.key,
     required this.psychologistName,
     required this.psychologistImage,
     required this.dateTime,
@@ -24,7 +24,7 @@ class SessionCard extends StatelessWidget {
     this.onVideoTap,
     this.onChatTap,
     this.showActions = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,9 @@ class SessionCard extends StatelessWidget {
                     ],
                   ),
                   image: DecorationImage(
-                    image: NetworkImage(psychologistImage),
+                    image: psychologistImage.startsWith('http')
+                        ? NetworkImage(psychologistImage)
+                        : AssetImage(psychologistImage) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -123,21 +125,6 @@ class SessionCard extends StatelessWidget {
             // Кнопки действий
             Row(
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onVideoTap,
-                    icon: const Icon(Icons.videocam_outlined, size: 20),
-                    label: const Text('Видео'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: CustomButton(

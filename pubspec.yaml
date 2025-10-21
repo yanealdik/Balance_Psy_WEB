@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.5
 
-  youtube_player_flutter: ^8.1.2 
+  youtube_player_flutter: ^8.1.2
 
   flutter_svg: ^2.0.9
 
@@ -61,6 +61,12 @@ flutter:
     - assets/stepimages/step1.png
     - assets/stepimages/women.svg
     - assets/stepimages/men.svg
+    - assets/images/mood/mood_overjoyed.png
+    - assets/images/mood/mood_happy.png
+    - assets/images/mood/mood_neutral.png
+    - assets/images/mood/mood_sad.png
+    - assets/images/mood/mood_depressed.png
+    - assets/images/avatar/Galiya.png
 
   fonts:
     - family: Manrope

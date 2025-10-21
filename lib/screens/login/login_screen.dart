@@ -8,7 +8,7 @@ import '../home/U_home_screen/home_screen.dart';
 
 /// Экран входа в приложение
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -94,9 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Переход на главный экран
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const PsychologistHomeScreen(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 },
                 icon: Icons.arrow_forward,
@@ -141,7 +139,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 backgroundColor: Colors.black,
                 textColor: Colors.white,
                 onPressed: () {
-                  // TODO: Implement Apple sign in
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PsychologistHomeScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -191,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: RichText(
                         text: TextSpan(
                           style: AppTextStyles.body1.copyWith(fontSize: 14),
-                          children: [
+                          children: const [
                             TextSpan(
                               text: 'Нету аккаунта? ',
                               style: TextStyle(color: AppColors.textSecondary),
@@ -247,12 +250,12 @@ class _LoginScreenState extends State<LoginScreen> {
           hintStyle: AppTextStyles.body2.copyWith(
             color: AppColors.textTertiary,
           ),
-          prefixIcon: Icon(
+          prefixIcon: const Icon(
             Icons.email_outlined,
             color: AppColors.textSecondary,
           ),
           suffixIcon: _isEmailValid
-              ? Icon(Icons.check_circle, color: AppColors.success)
+              ? const Icon(Icons.check_circle, color: AppColors.success)
               : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
@@ -284,7 +287,10 @@ class _LoginScreenState extends State<LoginScreen> {
           hintStyle: AppTextStyles.body2.copyWith(
             color: AppColors.textTertiary,
           ),
-          prefixIcon: Icon(Icons.lock_outline, color: AppColors.textSecondary),
+          prefixIcon: const Icon(
+            Icons.lock_outline,
+            color: AppColors.textSecondary,
+          ),
           suffixIcon: IconButton(
             icon: Icon(
               _isPasswordVisible

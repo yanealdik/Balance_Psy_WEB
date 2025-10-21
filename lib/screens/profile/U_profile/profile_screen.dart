@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_button.dart';
+import '../FAQ/faq_screen.dart';
+import '../edit/edit_screen.dart';
 import '../setting/setting_screen.dart';
 
 /// Экран профиля пользователя - Новый скриншот 4
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -51,11 +53,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.background,
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: AppColors.shadow,
                               blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
@@ -123,7 +125,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: CustomButton(
                   text: 'Редактировать профиль',
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EditProfileScreen(),
+                      ),
+                    );
+                  },
                   isFullWidth: true,
                 ),
               ),
@@ -142,11 +151,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: AppColors.primary.withOpacity(0.3),
                       width: 2,
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: AppColors.shadow,
                         blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
@@ -186,11 +195,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: AppColors.primary.withOpacity(0.3),
                       width: 2,
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: AppColors.shadow,
                         blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
@@ -211,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               notificationsEnabled = value;
                             });
                           },
-                          activeColor: AppColors.primary,
+                          activeThumbColor: AppColors.primary,
                         ),
                       ),
                       _buildDivider(),
@@ -224,13 +233,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               darkModeEnabled = value;
                             });
                           },
-                          activeColor: AppColors.primary,
+                          activeThumbColor: AppColors.primary,
                         ),
                       ),
                       _buildDivider(),
                       GestureDetector(
                         onTap: () {
-                          // TODO: Открыть помощь и поддержку
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FAQScreen(),
+                            ),
+                          );
                         },
                         child: _buildActionItem(
                           title: 'Помощь и поддержка',

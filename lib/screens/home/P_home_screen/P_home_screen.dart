@@ -5,7 +5,7 @@ import '../../../widgets/custom_button.dart';
 
 /// Главный экран психолога с заявками и расписанием
 class PsychologistHomeScreen extends StatefulWidget {
-  const PsychologistHomeScreen({Key? key}) : super(key: key);
+  const PsychologistHomeScreen({super.key});
 
   @override
   State<PsychologistHomeScreen> createState() => _PsychologistHomeScreenState();
@@ -21,7 +21,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       'id': 1,
       'clientName': 'Анна Ким',
       'clientImage': 'https://i.pravatar.cc/150?img=25',
-      'date': '21 октября 2024',
+      'date': '21 октября',
       'time': '15:00',
       'format': 'video',
       'requestDate': '20 окт, 14:30',
@@ -32,7 +32,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       'id': 2,
       'clientName': 'Дмитрий Петров',
       'clientImage': 'https://i.pravatar.cc/150?img=12',
-      'date': '22 октября 2024',
+      'date': '22 октября',
       'time': '10:00',
       'format': 'chat',
       'requestDate': '20 окт, 16:15',
@@ -46,17 +46,17 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       'id': 3,
       'clientName': 'Елена Смирнова',
       'clientImage': 'https://i.pravatar.cc/150?img=30',
-      'date': '20 октября 2024',
+      'date': '20 октября',
       'time': '18:00',
       'format': 'video',
-      'status': 'soon', // soon, today, later
+      'status': 'soon',
       'notes': 'Продолжение работы с самооценкой',
     },
     {
       'id': 4,
       'clientName': 'Максим Иванов',
       'clientImage': 'https://i.pravatar.cc/150?img=15',
-      'date': '21 октября 2024',
+      'date': '21 октября',
       'time': '11:00',
       'format': 'video',
       'status': 'today',
@@ -97,12 +97,12 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
             // Статистика
             _buildStatsCards(),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Вкладки
             _buildTabBar(),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             // Контент вкладок
             Expanded(
@@ -119,17 +119,17 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryLight],
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 12,
+            color: AppColors.primary.withOpacity(0.2),
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -137,18 +137,25 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       child: Row(
         children: [
           Container(
-            width: 56,
-            height: 56,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: Colors.white, width: 2.5),
               image: const DecorationImage(
                 image: NetworkImage('https://i.pravatar.cc/150?img=5'),
                 fit: BoxFit.cover,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,31 +163,55 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                 Text(
                   'Добро пожаловать!',
                   style: AppTextStyles.body2.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   'Галия Аубакирова',
                   style: AppTextStyles.h2.copyWith(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.notifications_outlined,
-              color: Colors.white,
-              size: 24,
+            child: Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.notifications_outlined,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  onPressed: () {
+                    _showNotificationsItem();
+                  },
+                ),
+                if (pendingRequests.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFF5252),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
@@ -202,7 +233,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               const Color(0xFF4CAF50),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: _buildStatCard(
               'Новые',
@@ -212,10 +243,10 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               const Color(0xFFFF9800),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: _buildStatCard(
-              'За неделю',
+              'Неделя',
               '${(stats['weekRevenue'] / 1000).toStringAsFixed(0)}к',
               '₸',
               Icons.wallet,
@@ -235,14 +266,14 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.05),
-            blurRadius: 8,
+            color: AppColors.shadow.withOpacity(0.06),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -251,34 +282,48 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 18),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Text(
             label,
             style: AppTextStyles.body3.copyWith(
-              fontSize: 11,
+              fontSize: 10,
               color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(value, style: AppTextStyles.h2.copyWith(fontSize: 24)),
-              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  value,
+                  style: AppTextStyles.h2.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 2),
               Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.only(bottom: 3),
                 child: Text(
                   unit,
                   style: AppTextStyles.body2.copyWith(
-                    fontSize: 13,
+                    fontSize: 11,
                     color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -292,19 +337,37 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
   Widget _buildTabBar() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
+      height: 48,
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
-        labelColor: AppColors.textWhite,
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        labelColor: Colors.white,
         unselectedLabelColor: AppColors.textSecondary,
-        labelStyle: AppTextStyles.button.copyWith(fontSize: 14),
+        labelStyle: AppTextStyles.button.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: AppTextStyles.button.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        padding: const EdgeInsets.all(4),
         tabs: [
           Tab(
             child: Row(
@@ -312,22 +375,22 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               children: [
                 const Text('Заявки'),
                 if (pendingRequests.isNotEmpty) ...[
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 6,
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.error,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       '${pendingRequests.length}',
-                      style: AppTextStyles.body3.copyWith(
-                        fontSize: 11,
+                      style: const TextStyle(
+                        fontSize: 10,
                         color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -351,7 +414,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       itemCount: pendingRequests.length,
       itemBuilder: (context, index) {
         return Padding(
@@ -367,12 +430,15 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.warning.withOpacity(0.3), width: 2),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: AppColors.warning.withOpacity(0.25),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.1),
-            blurRadius: 10,
+            color: AppColors.warning.withOpacity(0.08),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
@@ -386,34 +452,41 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
-                  vertical: 4,
+                  vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.1),
+                  color: AppColors.warning.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  'НОВАЯ ЗАЯВКА',
-                  style: AppTextStyles.body3.copyWith(
-                    fontSize: 11,
-                    color: AppColors.warning,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.fiber_new, size: 16, color: AppColors.warning),
+                    const SizedBox(width: 4),
+                    Text(
+                      'НОВАЯ ЗАЯВКА',
+                      style: AppTextStyles.body3.copyWith(
+                        fontSize: 10,
+                        color: AppColors.warning,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const Spacer(),
               Text(
                 request['requestDate'],
                 style: AppTextStyles.body3.copyWith(
-                  fontSize: 12,
+                  fontSize: 11,
                   color: AppColors.textTertiary,
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
           // Информация о клиенте
           Row(
@@ -421,22 +494,29 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               Stack(
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         image: NetworkImage(request['clientImage']),
                         fit: BoxFit.cover,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                   ),
                   if (request['isFirstSession'])
                     Positioned(
-                      right: 0,
-                      bottom: 0,
+                      right: -2,
+                      bottom: -2,
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           color: AppColors.primary,
                           shape: BoxShape.circle,
@@ -454,34 +534,41 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                     ),
                 ],
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Text(
-                          request['clientName'],
-                          style: AppTextStyles.h3.copyWith(fontSize: 17),
+                        Flexible(
+                          child: Text(
+                            request['clientName'],
+                            style: AppTextStyles.h3.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         if (request['isFirstSession']) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
+                              horizontal: 6,
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               'Новый',
                               style: AppTextStyles.body3.copyWith(
-                                fontSize: 10,
+                                fontSize: 9,
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -492,9 +579,11 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                     Text(
                       request['issue'],
                       style: AppTextStyles.body2.copyWith(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -502,7 +591,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
           // Детали сессии
           Container(
@@ -513,21 +602,40 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
             ),
             child: Row(
               children: [
-                _buildDetailItem(Icons.calendar_today, request['date']),
-                const SizedBox(width: 16),
-                _buildDetailItem(Icons.access_time, request['time']),
-                const SizedBox(width: 16),
-                _buildDetailItem(
-                  request['format'] == 'video'
-                      ? Icons.videocam_outlined
-                      : Icons.chat_bubble_outline,
-                  request['format'] == 'video' ? 'Видео' : 'Чат',
+                Expanded(
+                  child: _buildDetailItem(
+                    Icons.calendar_today,
+                    request['date'],
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 20,
+                  color: AppColors.textTertiary.withOpacity(0.2),
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                Expanded(
+                  child: _buildDetailItem(Icons.access_time, request['time']),
+                ),
+                Container(
+                  width: 1,
+                  height: 20,
+                  color: AppColors.textTertiary.withOpacity(0.2),
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                Expanded(
+                  child: _buildDetailItem(
+                    request['format'] == 'video'
+                        ? Icons.videocam_outlined
+                        : Icons.chat_bubble_outline,
+                    request['format'] == 'video' ? 'Видео' : 'Чат',
+                  ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
           // Кнопки действий
           Row(
@@ -537,16 +645,19 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                   onPressed: () => _declineRequest(request['id']),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error),
+                    side: BorderSide(color: AppColors.error, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 13),
                   ),
-                  child: const Text('Отклонить'),
+                  child: Text(
+                    'Отклонить',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 flex: 2,
                 child: CustomButton(
@@ -564,14 +675,20 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
 
   Widget _buildDetailItem(IconData icon, String text) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: AppTextStyles.body2.copyWith(
-            fontSize: 13,
-            color: AppColors.textPrimary,
+        Icon(icon, size: 15, color: AppColors.textSecondary),
+        const SizedBox(width: 5),
+        Flexible(
+          child: Text(
+            text,
+            style: AppTextStyles.body2.copyWith(
+              fontSize: 12,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -588,7 +705,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       itemCount: upcomingSessions.length,
       itemBuilder: (context, index) {
         return Padding(
@@ -615,11 +732,11 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadow.withOpacity(0.08),
-            blurRadius: 10,
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
@@ -629,56 +746,69 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
           Row(
             children: [
               Container(
-                width: 60,
-                height: 60,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
                     image: NetworkImage(session['clientImage']),
                     fit: BoxFit.cover,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       session['clientName'],
-                      style: AppTextStyles.h3.copyWith(fontSize: 17),
+                      style: AppTextStyles.h3.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(
                           Icons.access_time,
-                          size: 14,
+                          size: 13,
                           color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${session['date']}, ${session['time']}',
-                          style: AppTextStyles.body2.copyWith(fontSize: 13),
+                          style: AppTextStyles.body2.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
+                        horizontal: 8,
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
+                        color: statusColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         statusText,
                         style: AppTextStyles.body3.copyWith(
-                          fontSize: 11,
+                          fontSize: 10,
                           color: statusColor,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -698,17 +828,13 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.notes,
-                    size: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  Icon(Icons.notes, size: 15, color: AppColors.textSecondary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       session['notes'],
                       style: AppTextStyles.body2.copyWith(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -725,11 +851,11 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.videocam_outlined, size: 20),
-                  label: const Text('Начать'),
+                  icon: Icon(Icons.videocam_outlined, size: 18),
+                  label: Text('Начать'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    side: const BorderSide(color: AppColors.primary),
+                    side: BorderSide(color: AppColors.primary, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -737,7 +863,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: CustomButton(
                   text: 'Чат',
@@ -754,48 +880,49 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
 
   Widget _buildEmptyState(String title, String subtitle, IconData icon) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 56,
+                color: AppColors.primary.withOpacity(0.5),
+              ),
             ),
-            child: Icon(
-              icon,
-              size: 64,
-              color: AppColors.primary.withOpacity(0.5),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: AppTextStyles.h3.copyWith(
+                fontSize: 18,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            title,
-            style: AppTextStyles.h3.copyWith(
-              fontSize: 20,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
+            const SizedBox(height: 8),
+            Text(
               subtitle,
               textAlign: TextAlign.center,
               style: AppTextStyles.body2.copyWith(
-                fontSize: 14,
+                fontSize: 13,
                 color: AppColors.textTertiary,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   void _acceptRequest(int requestId) {
-    // TODO: Отправить запрос на сервер для подтверждения
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -808,18 +935,24 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                 color: AppColors.success.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle,
                 color: AppColors.success,
-                size: 32,
+                size: 28,
               ),
             ),
             const SizedBox(width: 12),
-            const Expanded(child: Text('Заявка подтверждена!')),
+            Expanded(
+              child: Text(
+                'Заявка подтверждена!',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Клиент получит уведомление о подтверждении сессии.',
+          style: TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
@@ -829,7 +962,7 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
                 pendingRequests.removeWhere((r) => r['id'] == requestId);
               });
             },
-            child: const Text('ОК'),
+            child: Text('ОК'),
           ),
         ],
       ),
@@ -841,14 +974,15 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Отклонить заявку?'),
-        content: const Text(
+        title: Text('Отклонить заявку?'),
+        content: Text(
           'Вы уверены, что хотите отклонить эту заявку? Клиент получит уведомление.',
+          style: TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
+            child: Text('Отмена'),
           ),
           TextButton(
             onPressed: () {
@@ -856,13 +990,212 @@ class _PsychologistHomeScreenState extends State<PsychologistHomeScreen>
               setState(() {
                 pendingRequests.removeWhere((r) => r['id'] == requestId);
               });
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Заявка отклонена')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Заявка отклонена'),
+                  backgroundColor: AppColors.error,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Отклонить'),
+            child: Text('Отклонить'),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationsItem() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: const BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Шапка модального окна
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadow.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Индикатор
+                  Container(
+                    width: 30,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: AppColors.textTertiary.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Уведомления',
+                        style: AppTextStyles.h2.copyWith(fontSize: 20),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.backgroundLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Список уведомлений
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildNotificationItem(
+                    icon: Icons.event_available,
+                    title: 'Новая заявка',
+                    message: 'Анна Ким хочет записаться на консультацию',
+                    time: '5 мин',
+                    isUnread: true,
+                  ),
+                  _buildNotificationItem(
+                    icon: Icons.message,
+                    title: 'Новое сообщение',
+                    message: 'Дмитрий Петров отправил сообщение',
+                    time: '1 час',
+                    isUnread: true,
+                  ),
+                  _buildNotificationItem(
+                    icon: Icons.payment,
+                    title: 'Платеж получен',
+                    message: 'Поступила оплата за консультацию',
+                    time: '2 часа',
+                    isUnread: false,
+                  ),
+                  _buildNotificationItem(
+                    icon: Icons.schedule,
+                    title: 'Напоминание',
+                    message: 'Через 30 минут начнется сессия с Еленой',
+                    time: '3 часа',
+                    isUnread: false,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationItem({
+    required IconData icon,
+    required String title,
+    required String message,
+    required String time,
+    bool isUnread = false,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isUnread
+            ? AppColors.primary.withOpacity(0.05)
+            : AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isUnread
+              ? AppColors.primary.withOpacity(0.2)
+              : Colors.transparent,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTextStyles.h1.copyWith(
+                        fontSize: 15,
+                        fontWeight: isUnread
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      time,
+                      style: AppTextStyles.body2.copyWith(
+                        fontSize: 12,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: AppTextStyles.body2.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          if (isUnread)
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(left: 8),
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
         ],
       ),
     );

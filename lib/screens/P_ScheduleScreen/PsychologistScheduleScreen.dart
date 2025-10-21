@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import 'Appointment/appointment.dart' hide GestureDetector, Container, SizedBox;
 
 /// Экран расписания приёмов психолога
 class PsychologistScheduleScreen extends StatefulWidget {
-  const PsychologistScheduleScreen({Key? key}) : super(key: key);
+  const PsychologistScheduleScreen({super.key});
 
   @override
   State<PsychologistScheduleScreen> createState() =>
@@ -23,8 +24,8 @@ class _PsychologistScheduleScreenState
       'date': DateTime.now(),
       'time': '15:30',
       'status': 'Ожидается',
-      'statusColor': Color(0xFFFFF4E0),
-      'statusTextColor': Color(0xFFD4A747),
+      'statusColor': const Color(0xFFFFF4E0),
+      'statusTextColor': const Color(0xFFD4A747),
     },
     {
       'name': 'Рамина Канатовна',
@@ -32,8 +33,8 @@ class _PsychologistScheduleScreenState
       'date': DateTime.now(),
       'time': '17:00',
       'status': 'Ожидается',
-      'statusColor': Color(0xFFFFF4E0),
-      'statusTextColor': Color(0xFFD4A747),
+      'statusColor': const Color(0xFFFFF4E0),
+      'statusTextColor': const Color(0xFFD4A747),
     },
     {
       'name': 'Ажар Алимбет',
@@ -41,25 +42,25 @@ class _PsychologistScheduleScreenState
       'date': DateTime.now(),
       'time': '20:30',
       'status': 'отменен',
-      'statusColor': Color(0xFFFFE8E8),
+      'statusColor': const Color(0xFFFFE8E8),
       'statusTextColor': AppColors.error,
     },
     {
       'name': 'Айгуль Сериккызы',
       'image': 'https://i.pravatar.cc/150?img=27',
-      'date': DateTime.now().add(Duration(days: 1)),
+      'date': DateTime.now().add(const Duration(days: 1)),
       'time': '10:00',
       'status': 'Ожидается',
-      'statusColor': Color(0xFFFFF4E0),
-      'statusTextColor': Color(0xFFD4A747),
+      'statusColor': const Color(0xFFFFF4E0),
+      'statusTextColor': const Color(0xFFD4A747),
     },
     {
       'name': 'Нурлан Ержанов',
       'image': 'https://i.pravatar.cc/150?img=12',
-      'date': DateTime.now().add(Duration(days: 2)),
+      'date': DateTime.now().add(const Duration(days: 2)),
       'time': '14:30',
       'status': 'Завершен',
-      'statusColor': Color(0xFFE8F5E9),
+      'statusColor': const Color(0xFFE8F5E9),
       'statusTextColor': AppColors.success,
     },
   ];
@@ -121,7 +122,7 @@ class _PsychologistScheduleScreenState
                               color: AppColors.textWhite,
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.calendar_today,
                             color: AppColors.textWhite,
                             size: 20,
@@ -209,32 +210,38 @@ class _PsychologistScheduleScreenState
                     ),
             ),
 
-            // Кнопка добавления
+            // Кнопка добавления - ОБНОВЛЕНО
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Align(
                 alignment: Alignment.centerRight,
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                child: Hero(
+                  tag: 'add_appointment_button',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.add,
-                      color: AppColors.textWhite,
-                      size: 28,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.add,
+                          color: AppColors.textWhite,
+                          size: 28,
+                        ),
+                        onPressed: _openCreateAppointmentScreen,
+                      ),
                     ),
-                    onPressed: () => _showAddAppointmentDialog(),
                   ),
                 ),
               ),
@@ -243,6 +250,51 @@ class _PsychologistScheduleScreenState
         ),
       ),
     );
+  }
+
+  // НОВЫЙ МЕТОД: Открытие креативного экрана создания
+  void _openCreateAppointmentScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            CreateAppointmentScreen(initialDate: selectedDate),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        allAppointments.add({
+          'name': result['name'],
+          'image':
+              'https://i.pravatar.cc/150?img=${allAppointments.length + 1}',
+          'date': result['date'],
+          'time': result['time'],
+          'status': result['status'],
+          'statusColor': result['statusColor'],
+          'statusTextColor': result['statusTextColor'],
+        });
+      });
+
+      // Показываем успешное уведомление
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 12),
+              Text('Запись успешно создана!'),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   // Мини-календарь (неделя)
@@ -325,11 +377,11 @@ class _PsychologistScheduleScreenState
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -399,7 +451,7 @@ class _PsychologistScheduleScreenState
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => Container(
           height: MediaQuery.of(context).size.height * 0.8,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.backgroundLight,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
@@ -407,7 +459,7 @@ class _PsychologistScheduleScreenState
             children: [
               // Хэндл
               Container(
-                margin: EdgeInsets.only(top: 12),
+                margin: const EdgeInsets.only(top: 12),
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
@@ -417,12 +469,12 @@ class _PsychologistScheduleScreenState
               ),
               // Заголовок
               Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.chevron_left),
+                      icon: const Icon(Icons.chevron_left),
                       onPressed: () {
                         setModalState(() {
                           displayedMonth = DateTime(
@@ -437,7 +489,7 @@ class _PsychologistScheduleScreenState
                       style: AppTextStyles.h3.copyWith(fontSize: 20),
                     ),
                     IconButton(
-                      icon: Icon(Icons.chevron_right),
+                      icon: const Icon(Icons.chevron_right),
                       onPressed: () {
                         setModalState(() {
                           displayedMonth = DateTime(
@@ -477,7 +529,7 @@ class _PsychologistScheduleScreenState
     final weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
           // Дни недели
@@ -499,11 +551,11 @@ class _PsychologistScheduleScreenState
                 )
                 .toList(),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           // Дни месяца
           Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
                 childAspectRatio: 1,
                 crossAxisSpacing: 8,
@@ -512,7 +564,7 @@ class _PsychologistScheduleScreenState
               itemCount: startWeekday - 1 + daysInMonth,
               itemBuilder: (context, index) {
                 if (index < startWeekday - 1) {
-                  return SizedBox();
+                  return const SizedBox();
                 }
                 final day = index - startWeekday + 2;
                 final date = DateTime(
@@ -590,128 +642,6 @@ class _PsychologistScheduleScreenState
     );
   }
 
-  // Диалог добавления приёма
-  void _showAddAppointmentDialog() {
-    final nameController = TextEditingController();
-    final timeController = TextEditingController();
-    DateTime selectedAppointmentDate = selectedDate;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(
-            'Добавить приём',
-            style: AppTextStyles.h3.copyWith(fontSize: 20),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Имя пациента
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Имя пациента',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                // Дата
-                GestureDetector(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: selectedAppointmentDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
-                    );
-                    if (picked != null) {
-                      setDialogState(() {
-                        selectedAppointmentDate = picked;
-                      });
-                    }
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.inputBorder),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _getDateString(selectedAppointmentDate),
-                          style: AppTextStyles.body1.copyWith(fontSize: 15),
-                        ),
-                        Icon(Icons.calendar_today, size: 20),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                // Время
-                TextField(
-                  controller: timeController,
-                  decoration: InputDecoration(
-                    labelText: 'Время (например: 15:30)',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Отмена',
-                style: AppTextStyles.body1.copyWith(
-                  fontSize: 15,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if (nameController.text.isNotEmpty &&
-                    timeController.text.isNotEmpty) {
-                  setState(() {
-                    allAppointments.add({
-                      'name': nameController.text,
-                      'image':
-                          'https://i.pravatar.cc/150?img=${allAppointments.length + 1}',
-                      'date': selectedAppointmentDate,
-                      'time': timeController.text,
-                      'status': 'Ожидается',
-                      'statusColor': Color(0xFFFFF4E0),
-                      'statusTextColor': Color(0xFFD4A747),
-                    });
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(
-                'Добавить',
-                style: AppTextStyles.body1.copyWith(
-                  fontSize: 15,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _getMonthYearString(DateTime date) {
     const months = [
       'Январь',
@@ -763,7 +693,7 @@ class _AllAppointmentsScreen extends StatelessWidget {
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -772,12 +702,12 @@ class _AllAppointmentsScreen extends StatelessWidget {
         ),
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         itemCount: appointments.length,
         itemBuilder: (context, index) {
           final appointment = appointments[index];
           return Padding(
-            padding: EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: 16),
             child: Dismissible(
               key: Key(appointment['name'] + index.toString()),
               direction: DismissDirection.endToStart,
@@ -785,23 +715,23 @@ class _AllAppointmentsScreen extends StatelessWidget {
                 onDelete(index);
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text('Приём удалён')));
+                ).showSnackBar(const SnackBar(content: Text('Приём удалён')));
               },
               background: Container(
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: 20),
+                padding: const EdgeInsets.only(right: 20),
                 decoration: BoxDecoration(
                   color: AppColors.error,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Icon(Icons.delete, color: Colors.white),
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.cardBackground,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: AppColors.shadow,
                       blurRadius: 10,
@@ -822,7 +752,7 @@ class _AllAppointmentsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -831,14 +761,14 @@ class _AllAppointmentsScreen extends StatelessWidget {
                             appointment['name'],
                             style: AppTextStyles.h3.copyWith(fontSize: 17),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             '${_getDateString(appointment['date'])}, ${appointment['time']}',
                             style: AppTextStyles.body2.copyWith(fontSize: 13),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 6,
                             ),

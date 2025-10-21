@@ -9,7 +9,7 @@ import '../register/register_step3.dart';
 
 /// Экран онбординга Шаг 2 - Имя и интересы
 class OnboardingStep2Screen extends StatefulWidget {
-  const OnboardingStep2Screen({Key? key}) : super(key: key);
+  const OnboardingStep2Screen({super.key});
 
   @override
   State<OnboardingStep2Screen> createState() => _OnboardingStep2ScreenState();
@@ -121,13 +121,13 @@ class _OnboardingStep2ScreenState extends State<OnboardingStep2Screen> {
         child: Column(
           children: [
             // Верхняя часть с кнопкой назад и индикатором
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CustomBackButton(),
-                  const StepIndicator(currentStep: 2, totalSteps: 5),
+                  CustomBackButton(),
+                  StepIndicator(currentStep: 2, totalSteps: 5),
                 ],
               ),
             ),
@@ -233,7 +233,7 @@ class _OnboardingStep2ScreenState extends State<OnboardingStep2Screen> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: AppColors.primary,
                                 shape: BoxShape.circle,
                               ),
@@ -256,7 +256,7 @@ class _OnboardingStep2ScreenState extends State<OnboardingStep2Screen> {
                                 ),
                               ),
                             ),
-                            Icon(
+                            const Icon(
                               Icons.check_circle,
                               color: AppColors.primary,
                               size: 18,

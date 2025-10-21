@@ -10,7 +10,7 @@ import 'intro_meditation.dart';
 
 /// Экран знакомства с приложением
 class IntroScreen extends StatefulWidget {
-  const IntroScreen({Key? key}) : super(key: key);
+  const IntroScreen({super.key});
 
   @override
   State<IntroScreen> createState() => _IntroScreenState();
@@ -118,7 +118,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.check_circle,
                           size: 18,
                           color: AppColors.primary,
@@ -205,7 +205,7 @@ class _IntroScreenState extends State<IntroScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.info_outline,
                         color: AppColors.primary,
                         size: 20,
@@ -349,7 +349,7 @@ class _IntroScreenState extends State<IntroScreen> {
                             ),
                           ),
                           const Spacer(),
-                          Icon(
+                          const Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
                             color: AppColors.textSecondary,

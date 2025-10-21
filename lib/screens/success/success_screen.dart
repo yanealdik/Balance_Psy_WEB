@@ -8,7 +8,7 @@ import '../intro/intro_screen.dart';
 
 /// Экран успешной регистрации - Скриншот 8
 class SuccessScreen extends StatelessWidget {
-  const SuccessScreen({Key? key}) : super(key: key);
+  const SuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +28,12 @@ class SuccessScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              Padding(
-              padding: const EdgeInsets.all(16),
+              const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CustomBackButton(),
+                  CustomBackButton(),
                 ],
               ),
             ),

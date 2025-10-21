@@ -8,8 +8,7 @@ import 'booking_screen.dart';
 class PsychologistProfileScreen extends StatefulWidget {
   final Map<String, dynamic> psychologist;
 
-  const PsychologistProfileScreen({Key? key, required this.psychologist})
-    : super(key: key);
+  const PsychologistProfileScreen({super.key, required this.psychologist});
 
   @override
   State<PsychologistProfileScreen> createState() =>
@@ -105,7 +104,7 @@ class _PsychologistProfileScreenState extends State<PsychologistProfileScreen>
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(widget.psychologist['image'], fit: BoxFit.cover),
+            Image.asset(widget.psychologist['image'], fit: BoxFit.cover),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -115,6 +114,7 @@ class _PsychologistProfileScreenState extends State<PsychologistProfileScreen>
                 ),
               ),
             ),
+
             Positioned(
               bottom: 20,
               left: 20,

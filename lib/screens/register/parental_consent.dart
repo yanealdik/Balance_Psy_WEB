@@ -11,9 +11,9 @@ class ParentalConsentScreen extends StatefulWidget {
   final int age;
 
   const ParentalConsentScreen({
-    Key? key,
+    super.key,
     required this.age,
-  }) : super(key: key);
+  });
 
   @override
   State<ParentalConsentScreen> createState() => _ParentalConsentScreenState();
@@ -82,14 +82,14 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                 color: AppColors.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.email_outlined,
                 color: AppColors.primary,
                 size: 24,
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
+            const Expanded(
               child: Text(
                 'Письмо отправлено',
                 style: AppTextStyles.h3,
@@ -116,7 +116,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.email,
                     color: AppColors.primary,
                     size: 16,
@@ -177,11 +177,11 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
         child: Column(
           children: [
             // Верхняя часть с кнопкой назад
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const CustomBackButton(),
+                  CustomBackButton(),
                 ],
               ),
             ),
@@ -204,7 +204,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                           color: AppColors.primary.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.family_restroom,
                           size: 40,
                           color: AppColors.primary,
@@ -292,25 +292,25 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                         ),
                         filled: true,
                         fillColor: AppColors.inputBackground,
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.email_outlined,
                           color: AppColors.textSecondary,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: AppColors.inputBorder,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: AppColors.inputBorder,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: AppColors.primary,
                             width: 2,
                           ),
@@ -388,8 +388,8 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                                   style: AppTextStyles.body2.copyWith(
                                     color: AppColors.textPrimary,
                                   ),
-                                  children: [
-                                    const TextSpan(
+                                  children: const [
+                                    TextSpan(
                                       text:
                                           'Я подтверждаю, что у меня есть разрешение родителя на предоставление этого email адреса и отправку запроса на согласие.',
                                     ),
@@ -450,7 +450,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             color: AppColors.primary,
                             size: 20,
@@ -470,7 +470,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                                   ),
                                   TextSpan(
                                     text: 'Узнать больше',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: AppColors.primary,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -515,7 +515,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
         Container(
           width: 28,
           height: 28,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.primary,
             shape: BoxShape.circle,
           ),

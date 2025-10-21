@@ -7,7 +7,7 @@ import '../register/register_step1.dart';
 
 /// Экран приветствия - Скриншот 2
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +17,11 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           children: [
             // Верхняя часть с кнопкой назад
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const CustomBackButton(),
+                  CustomBackButton(),
                 ],
               ),
             ),
