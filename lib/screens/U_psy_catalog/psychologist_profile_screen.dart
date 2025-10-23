@@ -317,7 +317,7 @@ class _PsychologistProfileScreenState extends State<PsychologistProfileScreen>
         controller: _tabController,
         indicator: BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
         ),
         labelColor: AppColors.textWhite,
         unselectedLabelColor: AppColors.textSecondary,

@@ -1,27 +1,43 @@
 import 'package:flutter/material.dart';
 
+// Конфигурации navbar для разных ролей
+class NavConfig {
+  static const userIcons = [
+    Icons.home_outlined,
+    Icons.psychology_outlined,
+    Icons.article_outlined,
+    Icons.chat_bubble_outline,
+    Icons.person_outline,
+  ];
+
+  static const psychologistIcons = [
+    Icons.home_outlined,
+    Icons.calendar_today_outlined,
+    Icons.analytics_outlined,
+    Icons.chat_bubble_outline,
+    Icons.person_outline,
+  ];
+}
+
+// Универсальный NavBar
 class CustomNavBar extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onItemSelected;
+  final Function(int) onTap;
+  final List<IconData> icons;
+  final Color? selectedColor;
 
   const CustomNavBar({
     super.key,
     required this.currentIndex,
-    required this.onItemSelected,
+    required this.onTap,
+    required this.icons,
+    this.selectedColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final List<IconData> icons = [
-      Icons.home_outlined, // Home
-      Icons.calendar_today_outlined, // Catalog
-      Icons.edit_note_outlined, // Article
-      Icons.chat_bubble_outline, // Chat
-      Icons.person_outline, // Profile
-    ];
-
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -37,27 +53,31 @@ class CustomNavBar extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(icons.length, (index) {
-            final bool isSelected = currentIndex == index;
+          children: List.generate(icons.length, (i) {
+            final isSelected = currentIndex == i;
             return GestureDetector(
-              onTap: () => onItemSelected(index),
+              onTap: () => onTap(i),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue[400] : Colors.transparent,
+                  color: isSelected
+                      ? (selectedColor ?? Colors.blue[400])
+                      : Colors.transparent,
                   shape: BoxShape.circle,
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Colors.blue.withOpacity(0.25),
+                            color: (selectedColor ?? Colors.blue).withOpacity(
+                              0.25,
+                            ),
                             blurRadius: 20,
                             spreadRadius: 4,
                           ),
                         ]
                       : [],
                 ),
-                child: Icon(icons[index], size: 28, color: Colors.black),
+                child: Icon(icons[i], size: 28, color: Colors.black),
               ),
             );
           }),

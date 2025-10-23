@@ -166,7 +166,7 @@ class _OnboardingStep2ScreenState extends State<OnboardingStep2Screen> {
                       enabled: true,
                       maxLength: 50,
                       onChanged: (value) {
-                        setState(() {}); // Важно: добавьте setState здесь!
+                        setState(() {});
                       },
                     ),
 
@@ -289,20 +289,10 @@ class _OnboardingStep2ScreenState extends State<OnboardingStep2Screen> {
                           ),
                         );
                       }
-                    : null, isFullWidth: true,
+                    : null,
+                isFullWidth: true,
               ),
             ),
-
-            // DEBUG: Показываем состояние (удалить после тестирования)
-            if (true) // Измените на false когда проверите
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(
-                  'Debug: Name="${_nameController.text.trim()}" (${_nameController.text.trim().length} chars), Interests=${selectedInterests.length}, CanContinue=$_canContinue',
-                  style: const TextStyle(fontSize: 10, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ),
           ],
         ),
       ),

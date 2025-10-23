@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/P_main_navbar/main_nav.dart';
 import 'screens/splash/splash_screen.dart';
-import 'screens/P_main_navbar/main_nav.dart';
+import 'screens/home/P_home_screen/P_home_screen.dart'; // Изменили импорт
 import 'theme/app_colors.dart';
 
 void main() {
-  // Устанавливаем ориентацию только портретная
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
-  
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(const BalancePsyApp());
 }
 
@@ -26,12 +22,9 @@ class BalancePsyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: AppColors.primary,
         scaffoldBackgroundColor: AppColors.background,
-        fontFamily: 'Manrope', // Можно заменить на системный шрифт
-        
-        // Дополнительные настройки темы для лучшего вида
+        fontFamily: 'Manrope',
         useMaterial3: true,
-        
-        // Цветовая схема
+
         colorScheme: ColorScheme.light(
           primary: AppColors.primary,
           secondary: AppColors.primary,
@@ -39,8 +32,7 @@ class BalancePsyApp extends StatelessWidget {
           surface: AppColors.cardBackground,
           error: AppColors.error,
         ),
-        
-        // Стиль AppBar
+
         appBarTheme: AppBarTheme(
           backgroundColor: AppColors.backgroundLight,
           elevation: 0,
@@ -52,8 +44,7 @@ class BalancePsyApp extends StatelessWidget {
             fontFamily: 'Manrope',
           ),
         ),
-        
-        // Стиль кнопок
+
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
@@ -64,8 +55,7 @@ class BalancePsyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        
-        // Стиль текстовых полей
+
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppColors.cardBackground,
@@ -83,12 +73,11 @@ class BalancePsyApp extends StatelessWidget {
           ),
         ),
       ),
-      
-      // Определяем роуты
+
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
-        '/home': (context) => const MainContainer(),
+        '/home': (context) => const PsychologistHomeScreen(), // Изменили
       },
     );
   }

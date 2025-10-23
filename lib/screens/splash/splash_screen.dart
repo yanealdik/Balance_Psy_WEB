@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../start/start_screen.dart';
 
-/// Splash экран с анимацией загрузки
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -10,142 +10,130 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Инициализация анимации
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
-
-    // Запуск анимации
-    _controller.forward();
-
-    // Переход на главный экран через 2.5 секунды
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        // ВАЖНО: Переход на MainContainer вместо PsychologistHomeScreen
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    });
+    _navigateToNextScreen();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<void> _navigateToNextScreen() async {
+    // Задержка для показа splash screen
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    // Проверяем, авторизован ли пользователь
+    // TODO: Добавьте вашу логику проверки авторизации
+    // final isAuthenticated = await checkAuth();
+    // final userRole = await getUserRole(); // 'user' или 'psychologist'
+
+    // Для примера используем StartScreen
+    // В реальном приложении добавьте проверку:
+    // if (isAuthenticated) {
+    //   if (userRole == 'psychologist') {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => const MainContainer()),
+    //     );
+    //   } else {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => const HomeScreen()),
+    //     );
+    //   }
+    // } else {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const StartScreen()),
+    //   );
+    // }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const StartScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary,
-              AppColors.primary.withOpacity(0.8),
-            ],
-          ),
-        ),
-        child: Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Логотип
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.psychology,
-                      size: 60,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // Название приложения
-                  Text(
-                    'BalancePsy',
-                    style: AppTextStyles.h1.copyWith(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Подзаголовок
-                  Text(
-                    'Баланс для вашей души',
-                    style: AppTextStyles.body1.copyWith(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 60),
-                  
-                  // Индикатор загрузки
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withOpacity(0.8),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(height: 40),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildLogo(),
+                    const SizedBox(height: 24),
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Balance',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Psy',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withOpacity(0.8),
+            AppColors.primaryLight.withOpacity(0.6),
+          ],
+        ),
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Positioned(
+            left: 25,
+            child: Icon(Icons.face, size: 50, color: AppColors.textWhite),
+          ),
+          Positioned(
+            right: 20,
+            child: Icon(
+              Icons.balance,
+              size: 45,
+              color: AppColors.textWhite.withOpacity(0.9),
+            ),
+          ),
+        ],
       ),
     );
   }

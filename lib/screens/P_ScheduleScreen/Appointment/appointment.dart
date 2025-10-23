@@ -3,35 +3,38 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_button.dart';
 
-/// Креативный экран создания записи на приём
 class CreateAppointmentScreen extends StatefulWidget {
   final DateTime? initialDate;
+  final Function(Map<String, dynamic>)? onAppointmentCreated;
 
-  const CreateAppointmentScreen({super.key, this.initialDate});
+  const CreateAppointmentScreen({
+    super.key,
+    this.initialDate,
+    this.onAppointmentCreated,
+  });
 
   @override
   State<CreateAppointmentScreen> createState() =>
       _CreateAppointmentScreenState();
 }
 
-class _CreateAppointmentScreenState extends State<CreateAppointmentScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
+class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
 
   // Данные формы
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  String _selectedFormat = 'video'; // video, chat, audio
+  String _selectedFormat = 'video';
   String _selectedIssue = '';
+
+  bool _isUserFound = false;
+  bool _isSearching = false;
+  Map<String, dynamic>? _foundUser;
 
   final List<Map<String, dynamic>> _issues = [
     {
@@ -52,32 +55,47 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen>
     if (widget.initialDate != null) {
       _selectedDate = widget.initialDate!;
     }
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-        );
-
-    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     _pageController.dispose();
-    _nameController.dispose();
     _phoneController.dispose();
+    _nameController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  // Имитация поиска пользователя по номеру
+  Future<void> _searchUserByPhone(String phone) async {
+    if (phone.length < 10) return;
+
+    setState(() => _isSearching = true);
+
+    // Имитация API запроса
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Симуляция: если номер заканчивается на четное число - пользователь найден
+    final lastDigit = int.tryParse(phone[phone.length - 1]) ?? 0;
+    final userExists = lastDigit % 2 == 0;
+
+    setState(() {
+      _isSearching = false;
+      _isUserFound = userExists;
+
+      if (userExists) {
+        _foundUser = {
+          'name': 'Анна Ким',
+          'phone': phone,
+          'image': 'https://i.pravatar.cc/150?img=25',
+          'isRegistered': true,
+        };
+        _nameController.text = _foundUser!['name'];
+      } else {
+        _foundUser = null;
+        _nameController.clear();
+      }
+    });
   }
 
   void _nextStep() {
@@ -105,21 +123,29 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen>
   }
 
   void _saveAppointment() {
-    // Здесь сохранение данных
     final appointment = {
-      'name': _nameController.text,
+      'name': _nameController.text.isEmpty ? 'Гость' : _nameController.text,
       'phone': _phoneController.text,
+      'image':
+          _foundUser?['image'] ??
+          'https://i.pravatar.cc/150?img=${DateTime.now().millisecond}',
       'date': _selectedDate,
       'time':
           '${_selectedTime.hour}:${_selectedTime.minute.toString().padLeft(2, '0')}',
       'format': _selectedFormat,
       'issue': _selectedIssue,
       'notes': _notesController.text,
-      'status': 'Ожидается',
-      'statusColor': const Color(0xFFFFF4E0),
-      'statusTextColor': const Color(0xFFD4A747),
+      'status': _isUserFound ? 'Приглашение отправлено' : 'Гостевая запись',
+      'statusColor': _isUserFound
+          ? const Color(0xFFE3F2FD)
+          : const Color(0xFFFFF4E0),
+      'statusTextColor': _isUserFound
+          ? const Color(0xFF1976D2)
+          : const Color(0xFFD4A747),
+      'isGuest': !_isUserFound,
     };
 
+    widget.onAppointmentCreated?.call(appointment);
     Navigator.pop(context, appointment);
   }
 
@@ -130,32 +156,22 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // Шапка
             _buildHeader(),
-
-            // Прогресс бар
             _buildProgressBar(),
-
             const SizedBox(height: 24),
-
-            // Контент шагов
             Expanded(
               child: PageView(
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  setState(() => _currentStep = index);
-                },
+                onPageChanged: (index) => setState(() => _currentStep = index),
                 children: [
-                  _buildStep1(), // Основная информация
+                  _buildStep1(), // Поиск пользователя
                   _buildStep2(), // Дата и время
                   _buildStep3(), // Формат и проблема
                   _buildStep4(), // Подтверждение
                 ],
               ),
             ),
-
-            // Кнопки навигации
             _buildNavigationButtons(),
           ],
         ),
@@ -206,7 +222,6 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen>
         children: List.generate(4, (index) {
           final isCompleted = index < _currentStep;
           final isCurrent = index == _currentStep;
-
           return Expanded(
             child: Container(
               margin: EdgeInsets.only(right: index < 3 ? 8 : 0),
@@ -224,71 +239,210 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen>
     );
   }
 
-  // Шаг 1: Основная информация
+  // Шаг 1: Поиск пользователя
   Widget _buildStep1() {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Иконка
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.person_add,
-                  size: 48,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.search, size: 48, color: AppColors.primary),
+          ),
+          const SizedBox(height: 24),
+          Text('Поиск клиента', style: AppTextStyles.h2.copyWith(fontSize: 26)),
+          const SizedBox(height: 8),
+          Text(
+            'Введите номер телефона для поиска или создайте гостевую запись',
+            style: AppTextStyles.body1.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Поле поиска
+          TextField(
+            controller: _phoneController,
+            keyboardType: TextInputType.phone,
+            onChanged: (value) {
+              if (value.length >= 10) {
+                _searchUserByPhone(value);
+              } else {
+                setState(() {
+                  _isUserFound = false;
+                  _foundUser = null;
+                });
+              }
+            },
+            style: AppTextStyles.body1.copyWith(fontSize: 16),
+            decoration: InputDecoration(
+              labelText: 'Номер телефона',
+              hintText: '+7 (___) ___-__-__',
+              prefixIcon: Icon(Icons.phone_outlined, color: AppColors.primary),
+              suffixIcon: _isSearching
+                  ? Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : _isUserFound
+                  ? Icon(Icons.check_circle, color: AppColors.success)
+                  : _phoneController.text.length >= 10
+                  ? Icon(Icons.person_add, color: AppColors.warning)
+                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: AppColors.inputBorder),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: AppColors.inputBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: AppColors.primary, width: 2),
+              ),
+              filled: true,
+              fillColor: AppColors.cardBackground,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Результат поиска
+          if (_isUserFound && _foundUser != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.success.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(_foundUser!['image']),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: AppColors.success,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Пользователь найден',
+                              style: AppTextStyles.body2.copyWith(
+                                color: AppColors.success,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _foundUser!['name'],
+                          style: AppTextStyles.h3.copyWith(fontSize: 17),
+                        ),
+                        Text(
+                          'Приглашение будет отправлено',
+                          style: AppTextStyles.body2.copyWith(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else if (_phoneController.text.length >= 10 && !_isSearching) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.person_add_outlined,
+                    color: AppColors.warning,
+                    size: 32,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Пользователь не найден',
+                          style: AppTextStyles.h3.copyWith(
+                            fontSize: 16,
+                            color: AppColors.warning,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Будет создана гостевая запись. Вы можете указать имя клиента ниже',
+                          style: AppTextStyles.body2.copyWith(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _nameController,
+              style: AppTextStyles.body1.copyWith(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'Имя клиента (необязательно)',
+                hintText: 'Например: Анна Ким',
+                prefixIcon: Icon(
+                  Icons.person_outline,
                   color: AppColors.primary,
                 ),
-              ),
-
-              const SizedBox(height: 24),
-
-              Text(
-                'Информация о клиенте',
-                style: AppTextStyles.h2.copyWith(fontSize: 26),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                'Введите основные данные для записи',
-                style: AppTextStyles.body1.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 15,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
                 ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: AppColors.primary, width: 2),
+                ),
+                filled: true,
+                fillColor: AppColors.cardBackground,
               ),
-
-              const SizedBox(height: 32),
-
-              // Имя
-              _buildTextField(
-                controller: _nameController,
-                label: 'Имя и фамилия',
-                hint: 'Например: Анна Ким',
-                icon: Icons.person_outline,
-              ),
-
-              const SizedBox(height: 20),
-
-              // Телефон
-              _buildTextField(
-                controller: _phoneController,
-                label: 'Номер телефона',
-                hint: '+7 (___) ___-__-__',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-              ),
-            ],
-          ),
-        ),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 /// Кастомное текстовое поле
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String hintText;
   final IconData? prefixIcon;
   final bool isPassword;
@@ -30,49 +30,82 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: showSuccess ? AppColors.success : AppColors.inputBorder,
+          color: widget.showSuccess
+              ? AppColors.success
+              : _isFocused
+              ? AppColors.primary
+              : AppColors.inputBorder,
           width: 2,
         ),
       ),
       child: TextField(
-        controller: controller,
-        enabled: enabled,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
+        controller: widget.controller,
+        focusNode: _focusNode,
+        enabled: widget.enabled,
+        obscureText: widget.isPassword,
+        keyboardType: widget.keyboardType,
         style: AppTextStyles.input,
-        maxLength: maxLength,
-        onChanged: onChanged,
+        maxLength: widget.maxLength,
+        onChanged: widget.onChanged,
         decoration: InputDecoration(
-          hintText: hintText,
+          hintText: widget.hintText,
           hintStyle: AppTextStyles.inputHint,
           border: InputBorder.none,
-          counterText: '', // Убираем счетчик символов
+          counterText: '',
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 16,
           ),
-          prefixIcon: prefixIcon != null
+          prefixIcon: widget.prefixIcon != null
               ? Padding(
                   padding: const EdgeInsets.only(left: 12, right: 8),
                   child: Icon(
-                    prefixIcon,
-                    color: AppColors.textSecondary,
+                    widget.prefixIcon,
+                    color: _isFocused
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                     size: 24,
                   ),
                 )
               : null,
-          suffixIcon: showSuccess
+          suffixIcon: widget.showSuccess
               ? const Padding(
                   padding: EdgeInsets.only(right: 12),
                   child: Icon(Icons.check, color: AppColors.success, size: 24),
                 )
-              : showEyeIcon
+              : widget.showEyeIcon
               ? const Padding(
                   padding: EdgeInsets.only(right: 12),
                   child: Icon(
