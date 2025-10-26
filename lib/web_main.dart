@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'theme/app_colors.dart';
-import 'web/web_main_screen.dart';
-import 'web/web_register.dart';
-import 'web/web_login.dart';
+import 'сore/router/app_router.dart';
 
-/// Entry point для веб-версии Balance Psy
+/// Entry point для веб-версии BalancePsy
 /// Запуск: flutter run -d chrome -t lib/web_main.dart
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,53 +24,86 @@ class BalancePsyWeb extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.light(
           primary: AppColors.primary,
-          secondary: AppColors.primary,
+          secondary: AppColors.primaryLight,
           background: AppColors.background,
           surface: AppColors.cardBackground,
           error: AppColors.error,
         ),
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const WebMainScreen(),
-        '/register': (context) => const WebRegisterFlow(),
-        '/login': (context) => const WebLoginScreen(),
-        '/web/dashboard': (context) => const WebDashboard(),
-      },
-    );
-  }
-}
-
-/// Временный дашборд (заглушка)
-class WebDashboard extends StatelessWidget {
-  const WebDashboard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Личный кабинет'),
-        backgroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.dashboard,
-              size: 100,
-              color: AppColors.primary,
+        // Настройки текстовой темы
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+          displayMedium: TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+          displaySmall: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textPrimary,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        // Настройки кнопок
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Добро пожаловать в BalancePsy!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primary,
+            side: const BorderSide(color: AppColors.primary, width: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 16),
-            const Text('Личный кабинет в разработке'),
-          ],
+          ),
+        ),
+        // Настройки полей ввода
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppColors.inputBackground,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.inputBorder),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.inputBorder),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.error),
+          ),
+          contentPadding: const EdgeInsets.all(16),
         ),
       ),
+      onGenerateRoute: AppRouter.generateRoute,
+      initialRoute: AppRouter.home,
     );
   }
 }
