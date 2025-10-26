@@ -29,8 +29,7 @@ class _IntroScreenState extends State<IntroScreen> {
           'BalancePsy — это твой персональный гид в мире психологического благополучия. Мы создали пространство, где ты можешь найти поддержку, понимание и инструменты для гармоничной жизни.',
       'icon': Icons.play_circle_outline,
       'duration': '2 мин',
-      'videoUrl':
-          'https://youtu.be/fxqE27gIZcc?si=-E8QMIsKkQ-DYcaP', // Замените на вашу ссылку
+      'videoPath': 'assets/video/intro.mp4', // Путь к вашему видео файлу
     },
     {
       'number': 2,
@@ -61,7 +60,7 @@ class _IntroScreenState extends State<IntroScreen> {
         screen = IntroVideoScreen(
           title: step['title'],
           description: step['description'],
-          videoUrl: step['videoUrl'],
+          videoPath: step['videoPath'], // Используем videoPath вместо videoUrl
         );
         break;
       case 'article':
