@@ -12,23 +12,13 @@ dependencies:
   cupertino_icons: ^1.0.5
 
   youtube_player_flutter: ^8.1.2
-
   video_player: ^2.8.2
-
   flutter_svg: ^2.0.9
 
-  # HTTP + авторизация
   dio: ^5.0.0
-
-  # Secure storage для токенов
   flutter_secure_storage: ^8.0.0
-
-  # state management (я буду объяснять на Riverpod)
   flutter_riverpod: ^2.3.0
-
-  # Валидация форм (опционально)
   form_field_validator: ^1.1.0
-
   json_annotation: ^4.8.0
   url_launcher: ^6.3.2
 
@@ -70,6 +60,17 @@ flutter:
     - assets/images/mood/mood_depressed.png
     - assets/images/avatar/Galiya.png
     - assets/video/intro.mp4
+    - assets/images/main_page/phone1.png
+    - assets/images/main_page/features.svg 
+    - assets/images/main_page/laura.svg 
+    - assets/images/main_page/yana.svg
+    - assets/images/main_page/woman.svg
+    - assets/images/main_page/features-2.png
+    - assets/images/main_page/galiya.svg
+    - assets/images/main_page/galiya1.png
+    - assets/images/main_page/yana1.png
+    - assets/images/main_page/laura1.png
+    - assets/images/main_page/phone2.png
 
   fonts:
     - family: Manrope

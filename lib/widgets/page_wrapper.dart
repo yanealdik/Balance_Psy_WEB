@@ -1,21 +1,21 @@
+// lib/widgets/page_wrapper.dart
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import 'web_navbar.dart';
+import 'home/header.dart';
 import 'web_footer.dart';
 
-/// Обертка для всех страниц с navbar и footer
 class PageWrapper extends StatelessWidget {
   final Widget child;
-  final String? currentRoute;
-  final bool showNavbar;
+  final String currentRoute;
+  final bool showHeader;
   final bool showFooter;
   final Color? backgroundColor;
 
   const PageWrapper({
     super.key,
     required this.child,
-    this.currentRoute,
-    this.showNavbar = true,
+    required this.currentRoute,
+    this.showHeader = true,
     this.showFooter = true,
     this.backgroundColor,
   });
@@ -26,11 +26,14 @@ class PageWrapper extends StatelessWidget {
       backgroundColor: backgroundColor ?? AppColors.backgroundLight,
       body: Column(
         children: [
-          if (showNavbar) WebNavbar(currentRoute: currentRoute),
+          if (showHeader) Header(currentRoute: currentRoute),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
-                children: [child, if (showFooter) const WebFooter()],
+                children: [
+                  child,
+                  if (showFooter) const WebFooter(),
+                ],
               ),
             ),
           ),

@@ -1,3 +1,4 @@
+// lib/web_pages/blog/article_detail.dart
 import 'package:flutter/material.dart';
 import '../../widgets/page_wrapper.dart';
 import '../../theme/app_text_styles.dart';
@@ -10,6 +11,7 @@ class ArticleDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageWrapper(
+      currentRoute: AppRouter.blog,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(80),
