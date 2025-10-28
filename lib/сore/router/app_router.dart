@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../web_pages/home/home_page.dart';
 import '../../web_pages/auth/login_page.dart';
-import '../../web_pages/auth/register/register_flow.dart';
+import '../../web_pages/auth/register/register_main.dart';
 import '../../web_pages/about/about_page.dart';
 import '../../web_pages/psychologists/psychologists_page.dart';
 import '../../web_pages/psychologists/psychologist_detail.dart';
@@ -32,7 +32,7 @@ class AppRouter {
       case login:
         return _buildRoute(const LoginPage());
       case register:
-        return _buildRoute(const RegisterFlow());
+        return _buildRoute(const RegisterMain());
       case about:
         return _buildRoute(const AboutPage());
       case psychologists:
