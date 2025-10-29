@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import 'web_navbar.dart';
-import 'web_footer.dart';
+import 'WEB/web_navbar.dart';
+import 'WEB/web_footer.dart';
 
 /// Обертка для всех страниц с navbar и footer
 class PageWrapper extends StatelessWidget {

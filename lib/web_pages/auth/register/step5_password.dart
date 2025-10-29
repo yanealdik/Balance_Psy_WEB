@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/WEB/web_button.dart';
 import '../../../models/user_register_model.dart';
 
 class Step5Password extends StatefulWidget {
@@ -81,22 +81,27 @@ class _Step5PasswordState extends State<Step5Password> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 24 : 60),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 24 : 48,
+          vertical: isMobile ? 32 : 48,
+        ),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(
+            maxWidth: isMobile ? double.infinity : 700,
+          ),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(isMobile),
-                SizedBox(height: isMobile ? 32 : 48),
+                SizedBox(height: isMobile ? 40 : 56),
                 _buildPasswordField(isMobile),
-                SizedBox(height: isMobile ? 20 : 24),
+                const SizedBox(height: 20),
                 _buildPasswordRequirements(isMobile),
-                SizedBox(height: isMobile ? 24 : 32),
+                const SizedBox(height: 32),
                 _buildConfirmPasswordField(isMobile),
-                SizedBox(height: isMobile ? 32 : 48),
+                SizedBox(height: isMobile ? 40 : 56),
                 _buildButtons(isMobile),
               ],
             ),
@@ -114,10 +119,13 @@ class _Step5PasswordState extends State<Step5Password> {
           'Создайте пароль',
           style: isMobile ? AppTextStyles.h2 : AppTextStyles.h1,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           'Придумайте надежный пароль для защиты вашего аккаунта',
-          style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+          style: AppTextStyles.body1.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
         ),
       ],
     );
@@ -131,7 +139,7 @@ class _Step5PasswordState extends State<Step5Password> {
           'Пароль',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextFormField(
           controller: _passwordController,
           style: AppTextStyles.input,
@@ -190,7 +198,7 @@ class _Step5PasswordState extends State<Step5Password> {
 
   Widget _buildPasswordRequirements(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(12),
@@ -206,15 +214,15 @@ class _Step5PasswordState extends State<Step5Password> {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           _buildRequirementItem('Минимум 8 символов', _hasMinLength),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildRequirementItem('Заглавная буква (A-Z)', _hasUpperCase),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildRequirementItem('Строчная буква (a-z)', _hasLowerCase),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildRequirementItem('Цифра (0-9)', _hasDigit),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildRequirementItem(
             'Специальный символ (!@#\$%^&*)',
             _hasSpecialChar,
@@ -234,10 +242,10 @@ class _Step5PasswordState extends State<Step5Password> {
       children: [
         Icon(
           satisfied ? Icons.check_circle : Icons.radio_button_unchecked,
-          size: 18,
+          size: 20,
           color: satisfied ? AppColors.success : AppColors.textSecondary,
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             text + (optional ? ' (рекомендуется)' : ''),
@@ -259,7 +267,7 @@ class _Step5PasswordState extends State<Step5Password> {
           'Подтвердите пароль',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextFormField(
           controller: _confirmPasswordController,
           style: AppTextStyles.input,
@@ -320,7 +328,7 @@ class _Step5PasswordState extends State<Step5Password> {
           Row(
             children: [
               const Icon(Icons.error_outline, size: 16, color: AppColors.error),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
               Text(
                 'Пароли не совпадают',
                 style: AppTextStyles.body3.copyWith(color: AppColors.error),
@@ -339,7 +347,7 @@ class _Step5PasswordState extends State<Step5Password> {
           SizedBox(
             width: 140,
             height: 56,
-            child: CustomButton(
+            child: WebButton(
               text: 'Назад',
               onPressed: widget.onBack,
               isPrimary: false,
@@ -348,15 +356,16 @@ class _Step5PasswordState extends State<Step5Password> {
           ),
           const SizedBox(width: 16),
         ],
-        SizedBox(
-          width: isMobile ? double.infinity : 260,
-          height: 56,
-          child: CustomButton(
-            text: 'Завершить регистрацию',
-            onPressed: _canContinue ? _handleNext : null,
-            isPrimary: true,
-            isFullWidth: true,
-            showArrow: true,
+        Expanded(
+          child: SizedBox(
+            height: 56,
+            child: WebButton(
+              text: 'Завершить регистрацию',
+              onPressed: _canContinue ? _handleNext : null,
+              isPrimary: true,
+              isFullWidth: true,
+              showArrow: true,
+            ),
           ),
         ),
       ],
