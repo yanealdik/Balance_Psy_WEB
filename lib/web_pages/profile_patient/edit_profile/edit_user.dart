@@ -1,81 +1,145 @@
-// ════════════════════════════════════════════════════════════════════════
-// lib/web_pages/profile_patient/profile_patient.dart
-// ════════════════════════════════════════════════════════════════════════
+// lib/web_pages/profile_patient/edit_profile/edit_profile_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
 import '../../../widgets/page_wrapper.dart';
 import '../../../widgets/profile_patient/patient_bar.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../сore/router/app_router.dart';
+import '../../../services/user_service.dart';
+import '../../../models/user_model.dart';
 
-class ProfilePatientPage extends StatefulWidget {
-  const ProfilePatientPage({super.key});
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
 
   @override
-  State<ProfilePatientPage> createState() => _ProfilePatientPageState();
+  State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _ProfilePatientPageState extends State<ProfilePatientPage> {
-  bool _isEditing = false;
-
-  // Данные профиля
-  String _name = 'Альдияр';
-  String _email = 'aldiyar@example.com';
-  String _phone = '+7 (777) 123-45-67';
-  String _birthDate = '15 марта 1990';
-  String _gender = 'Мужской';
-  String _therapyGoals = 'Снижение тревожности, работа со стрессом';
-
-  // Контроллеры для редактирования
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _birthDateController = TextEditingController();
-  final TextEditingController _therapyGoalsController = TextEditingController();
+class _EditProfilePageState extends State<EditProfilePage> {
+  final _formKey = GlobalKey<FormState>();
+  
+  UserModel? _user;
+  bool _isLoading = true;
+  bool _isSaving = false;
+  
+  // Controllers
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+  late TextEditingController _goalController;
+  
+  String? _selectedGender;
+  DateTime? _selectedDate;
+  List<String> _selectedInterests = [];
+  
+  Uint8List? _newAvatarBytes;
+  String? _newAvatarName;
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
-  }
-
-  void _initializeControllers() {
-    _nameController.text = _name;
-    _emailController.text = _email;
-    _phoneController.text = _phone;
-    _birthDateController.text = _birthDate;
-    _therapyGoalsController.text = _therapyGoals;
-  }
-
-  void _startEditing() {
-    setState(() {
-      _isEditing = true;
-    });
-  }
-
-  void _saveChanges() {
-    setState(() {
-      _name = _nameController.text;
-      _email = _emailController.text;
-      _phone = _phoneController.text;
-      _birthDate = _birthDateController.text;
-      _therapyGoals = _therapyGoalsController.text;
-      _isEditing = false;
-    });
-
-    // Здесь можно добавить сохранение данных на сервер
-  }
-
-  void _cancelEditing() {
-    setState(() {
-      _isEditing = false;
-      _initializeControllers(); // Восстанавливаем оригинальные значения
-    });
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _goalController = TextEditingController();
+    _loadUserData();
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _goalController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = await UserService.getCurrentUser();
+      setState(() {
+        _user = user;
+        _nameController.text = user.fullName;
+        _phoneController.text = user.phone ?? '';
+        _goalController.text = user.registrationGoal ?? '';
+        _selectedGender = user.gender;
+        _selectedDate = user.dateOfBirth;
+        _selectedInterests = List.from(user.interests);
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка загрузки: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickAvatar() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        setState(() {
+          _newAvatarBytes = file.bytes;
+          _newAvatarName = file.name;
+        });
+      }
+    } catch (e) {
+      _showSnackBar('Ошибка выбора файла: $e', isError: true);
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      // Загрузить аватар, если выбран
+      String? newAvatarUrl;
+      if (_newAvatarBytes != null && _newAvatarName != null) {
+        newAvatarUrl = await UserService.uploadAvatar(_newAvatarBytes!, _newAvatarName!);
+      }
+
+      // Обновить профиль
+      await UserService.updateProfile(
+        fullName: _nameController.text,
+        phone: _phoneController.text.isEmpty ? null : _phoneController.text,
+        dateOfBirth: _selectedDate,
+        gender: _selectedGender,
+        interests: _selectedInterests,
+        registrationGoal: _goalController.text.isEmpty ? null : _goalController.text,
+      );
+
+      if (mounted) {
+        _showSnackBar('Профиль успешно обновлён!');
+        Navigator.pop(context, true); // Вернуться с результатом
+      }
+    } catch (e) {
+      _showSnackBar('Ошибка сохранения: $e', isError: true);
+    } finally {
+      setState(() => _isSaving = false);
+    }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? AppColors.error : AppColors.success,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return PageWrapper(
       currentRoute: AppRouter.profile,
       showHeader: false,
@@ -83,80 +147,149 @@ class _ProfilePatientPageState extends State<ProfilePatientPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Боковое меню - используем виджет
           PatientBar(currentRoute: AppRouter.profile),
-
-          // Основной контент профиля
           Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 800),
-                margin: const EdgeInsets.all(40),
-                child: Column(
-                  children: [
-                    _buildProfileHeader(ctx),
-                    const SizedBox(height: 32),
-                    _buildProfileInfo(),
-                    const SizedBox(height: 32),
-                    _buildProfileActions(ctx),
-                  ],
-                ),
-              ),
-            ),
+            child: _isLoading
+                ? _buildLoadingState()
+                : _buildEditForm(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileHeader(BuildContext ctx) {
+  Widget _buildLoadingState() {
+    return Center(
+      child: CircularProgressIndicator(color: AppColors.primary),
+    );
+  }
+
+  Widget _buildEditForm() {
+    return SingleChildScrollView(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 900),
+        margin: const EdgeInsets.all(40),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 32),
+              _buildAvatarSection(),
+              const SizedBox(height: 32),
+              _buildBasicInfoSection(),
+              const SizedBox(height: 32),
+              _buildPersonalInfoSection(),
+              const SizedBox(height: 32),
+              _buildInterestsSection(),
+              const SizedBox(height: 40),
+              _buildActionButtons(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          color: AppColors.textPrimary,
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Редактирование профиля', style: AppTextStyles.h1.copyWith(fontSize: 32)),
+            const SizedBox(height: 4),
+            Text(
+              'Измените свои личные данные',
+              style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAvatarSection() {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withOpacity(0.05),
+            AppColors.primaryLight.withOpacity(0.02),
+          ],
+        ),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
       ),
       child: Row(
         children: [
           Stack(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: const AssetImage(
-                  'assets/images/avatar/aldiyar.png',
-                ),
-                backgroundColor: AppColors.primary.withOpacity(0.1),
-              ),
-              if (_isEditing)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.2),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
                     ),
-                    child: IconButton(
-                      onPressed: _changeAvatar,
-                      icon: const Icon(
-                        Icons.camera_alt,
-                        size: 16,
-                        color: Colors.white,
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: _newAvatarBytes != null
+                      ? MemoryImage(_newAvatarBytes!)
+                      : (_user?.avatarUrl != null
+                          ? NetworkImage(_user!.avatarUrl!)
+                          : null) as ImageProvider?,
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  child: _newAvatarBytes == null && _user?.avatarUrl == null
+                      ? Text(
+                          _user?.fullName[0].toUpperCase() ?? 'A',
+                          style: AppTextStyles.h1.copyWith(
+                            color: AppColors.primary,
+                            fontSize: 36,
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Material(
+                  color: AppColors.primary,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    onTap: _pickAvatar,
+                    customBorder: const CircleBorder(),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
                       ),
-                      padding: EdgeInsets.zero,
+                      child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
                     ),
                   ),
                 ),
+              ),
             ],
           ),
           const SizedBox(width: 24),
@@ -164,143 +297,37 @@ class _ProfilePatientPageState extends State<ProfilePatientPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!_isEditing) ...[
-                  Text(_name, style: AppTextStyles.h1.copyWith(fontSize: 32)),
-                  const SizedBox(height: 8),
-                  Text(
-                    _email,
-                    style: AppTextStyles.body1.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ] else ...[
-                  _buildEditableField(
-                    controller: _nameController,
-                    hintText: 'Имя',
-                    style: AppTextStyles.h1.copyWith(fontSize: 32),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildEditableField(
-                    controller: _emailController,
-                    hintText: 'Email',
-                    style: AppTextStyles.body1.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                Text('Фото профиля', style: AppTextStyles.h3),
+                const SizedBox(height: 8),
+                Text(
+                  _newAvatarBytes != null
+                      ? 'Новое фото выбрано: $_newAvatarName'
+                      : 'Нажмите на иконку камеры, чтобы изменить фото',
+                  style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary),
+                ),
+                if (_newAvatarBytes != null) ...[
+                  const SizedBox(height: 12),
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _newAvatarBytes = null;
+                        _newAvatarName = null;
+                      });
+                    },
+                    icon: const Icon(Icons.close, size: 18),
+                    label: const Text('Отменить'),
+                    style: TextButton.styleFrom(foregroundColor: AppColors.error),
                   ),
                 ],
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _buildProfileStat('Сессии', '12'),
-                    const SizedBox(width: 20),
-                    _buildProfileStat('Статьи', '8'),
-                    const SizedBox(width: 20),
-                    _buildProfileStat('Недели', '6'),
-                  ],
-                ),
               ],
             ),
           ),
-          if (!_isEditing)
-            IconButton(
-              onPressed: _startEditing,
-              icon: const Icon(Icons.edit_outlined),
-              color: AppColors.primary,
-            )
-          else
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildActionButton(
-                  onPressed: _saveChanges,
-                  icon: Icons.check,
-                  color: AppColors.success,
-                  tooltip: 'Сохранить',
-                ),
-                const SizedBox(width: 8),
-                _buildActionButton(
-                  onPressed: _cancelEditing,
-                  icon: Icons.close,
-                  color: Colors.red,
-                  tooltip: 'Отменить',
-                ),
-              ],
-            ),
         ],
       ),
     );
   }
 
-  Widget _buildActionButton({
-    required VoidCallback onPressed,
-    required IconData icon,
-    required Color color,
-    required String tooltip,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: IconButton(
-          onPressed: onPressed,
-          icon: Icon(icon, size: 20, color: color),
-          padding: EdgeInsets.zero,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEditableField({
-    required TextEditingController controller,
-    required String hintText,
-    required TextStyle style,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.inputBackground,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        style: style,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: style.copyWith(color: AppColors.textTertiary),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
-          isDense: true,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileStat(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: AppTextStyles.h3.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        Text(
-          label,
-          style: AppTextStyles.body3.copyWith(color: AppColors.textSecondary),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProfileInfo() {
+  Widget _buildBasicInfoSection() {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
@@ -318,243 +345,52 @@ class _ProfilePatientPageState extends State<ProfilePatientPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Личная информация', style: AppTextStyles.h2),
-              if (_isEditing)
-                Text(
-                  'Режим редактирования',
-                  style: AppTextStyles.body2.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              Icon(Icons.person_outline, color: AppColors.primary, size: 24),
+              const SizedBox(width: 12),
+              Text('Основная информация', style: AppTextStyles.h2),
             ],
           ),
           const SizedBox(height: 24),
-          _buildInfoRow('Телефон', _phone, _phoneController, Icons.phone),
-          _buildInfoRow(
-            'Дата рождения',
-            _birthDate,
-            _birthDateController,
-            Icons.calendar_today,
+          _buildTextField(
+            controller: _nameController,
+            label: 'Полное имя',
+            hint: 'Введите ваше имя',
+            icon: Icons.person,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Введите имя';
+              }
+              if (value.length < 2) {
+                return 'Минимум 2 символа';
+              }
+              return null;
+            },
           ),
-          _buildGenderRow(),
-          _buildInfoRow(
-            'Цели терапии',
-            _therapyGoals,
-            _therapyGoalsController,
-            Icons.flag,
+          const SizedBox(height: 20),
+          _buildTextField(
+            controller: _phoneController,
+            label: 'Телефон',
+            hint: '+7 (777) 123-45-67',
+            icon: Icons.phone,
+            keyboardType: TextInputType.phone,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(
-    String label,
-    String value,
-    TextEditingController controller,
-    IconData icon,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 150,
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: AppColors.textSecondary),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: AppTextStyles.body1.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _isEditing
-                ? _buildEditableInfoField(controller, label)
-                : Text(
-                    value,
-                    style: AppTextStyles.body1.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+          const SizedBox(height: 20),
+          _buildTextField(
+            controller: _goalController,
+            label: 'Цели терапии',
+            hint: 'Что вы хотите достичь?',
+            icon: Icons.flag,
+            maxLines: 3,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEditableInfoField(
-    TextEditingController controller,
-    String label,
-  ) {
+  Widget _buildPersonalInfoSection() {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.inputBackground,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
-        maxLines: label == 'Цели терапии' ? 3 : 1,
-        decoration: InputDecoration(
-          hintText: 'Введите $label',
-          hintStyle: AppTextStyles.body1.copyWith(
-            color: AppColors.textTertiary,
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGenderRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 150,
-            child: Row(
-              children: [
-                Icon(
-                  Icons.person_outline,
-                  size: 18,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Пол',
-                  style: AppTextStyles.body1.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _isEditing
-                ? _buildGenderSelector()
-                : Text(
-                    _gender,
-                    style: AppTextStyles.body1.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGenderSelector() {
-    return Row(
-      children: [
-        _buildGenderOption('Мужской', Icons.male),
-        const SizedBox(width: 16),
-        _buildGenderOption('Женский', Icons.female),
-      ],
-    );
-  }
-
-  Widget _buildGenderOption(String gender, IconData icon) {
-    final isSelected = _gender == gender;
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _gender = gender;
-            });
-          },
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.primary.withOpacity(0.1)
-                  : AppColors.inputBackground,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.inputBorder,
-                width: 2,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  gender,
-                  style: AppTextStyles.body1.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileActions(BuildContext ctx) {
-    final actions = [
-      _ProfileAction(
-        icon: Icons.person_outline,
-        title: 'Личные данные',
-        onTap: _startEditing,
-      ),
-      _ProfileAction(
-        icon: Icons.event_available,
-        title: 'Мои сессии',
-        onTap: () => _showComingSoon(ctx, 'Мои сессии'),
-      ),
-      _ProfileAction(
-        icon: Icons.credit_card,
-        title: 'Оплата и подписка',
-        onTap: () => _showComingSoon(ctx, 'Оплата и подписка'),
-      ),
-      _ProfileAction(
-        icon: Icons.settings_outlined,
-        title: 'Настройки',
-        onTap: () => _showComingSoon(ctx, 'Настройки'),
-      ),
-      _ProfileAction(
-        icon: Icons.logout,
-        title: 'Выйти',
-        color: Colors.red,
-        onTap: () => _showComingSoon(ctx, 'Выход'),
-      ),
-    ];
-
-    return Container(
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -567,94 +403,336 @@ class _ProfilePatientPageState extends State<ProfilePatientPage> {
         ],
       ),
       child: Column(
-        children: actions
-            .map((action) => _buildProfileActionTile(action))
-            .toList(),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline, color: AppColors.primary, size: 24),
+              const SizedBox(width: 12),
+              Text('Личные данные', style: AppTextStyles.h2),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _buildDatePicker(),
+          const SizedBox(height: 20),
+          _buildGenderSelector(),
+        ],
       ),
     );
   }
 
-  Widget _buildProfileActionTile(_ProfileAction action) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: action.onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.inputBorder.withOpacity(0.3),
-                width: 1,
-              ),
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          style: AppTextStyles.input,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: AppTextStyles.inputHint,
+            prefixIcon: Icon(icon, color: AppColors.primary),
+            filled: true,
+            fillColor: AppColors.inputBackground,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.inputBorder),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.inputBorder),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
           ),
-          child: Row(
-            children: [
-              Icon(
-                action.icon,
-                color: action.color ?? AppColors.primary,
-                size: 24,
+          validator: validator,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDatePicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Дата рождения',
+          style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _selectedDate ?? DateTime(2000),
+              firstDate: DateTime(1950),
+              lastDate: DateTime.now(),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: AppColors.primary,
+                      onPrimary: Colors.white,
+                      surface: Colors.white,
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (picked != null) {
+              setState(() => _selectedDate = picked);
+            }
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.inputBackground,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _selectedDate != null ? AppColors.primary : AppColors.inputBorder,
+                width: _selectedDate != null ? 2 : 1,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  action.title,
-                  style: AppTextStyles.body1.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: action.color ?? AppColors.textPrimary,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  color: _selectedDate != null ? AppColors.primary : AppColors.textSecondary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _selectedDate != null
+                        ? _formatDate(_selectedDate!)
+                        : 'Выберите дату рождения',
+                    style: _selectedDate != null
+                        ? AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600)
+                        : AppTextStyles.inputHint,
                   ),
                 ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: action.color ?? AppColors.textSecondary,
-              ),
-            ],
+                Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+              ],
+            ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGenderSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Пол',
+          style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(child: _buildGenderOption('male', 'Мужской', Icons.male)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildGenderOption('female', 'Женский', Icons.female)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGenderOption(String value, String label, IconData icon) {
+    final isSelected = _selectedGender == value;
+    return InkWell(
+      onTap: () => setState(() => _selectedGender = value),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withOpacity(0.1) : AppColors.inputBackground,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.inputBorder,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: AppTextStyles.body1.copyWith(
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _changeAvatar() {
-    // Здесь можно добавить логику для смены аватара
-    _showComingSoon(context, 'Смена аватара');
-  }
+  Widget _buildInterestsSection() {
+    final allInterests = [
+      'Тревожность',
+      'Депрессия',
+      'Отношения',
+      'Самооценка',
+      'Стресс',
+      'Выгорание',
+      'Личностный рост',
+      'Семья',
+    ];
 
-  void _showComingSoon(BuildContext ctx, String feature) {
-    ScaffoldMessenger.of(ctx).showSnackBar(
-      SnackBar(
-        content: Text('$feature - скоро будет доступно'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.interests, color: AppColors.primary, size: 24),
+              const SizedBox(width: 12),
+              Text('Интересы и темы', style: AppTextStyles.h2),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: allInterests.map((interest) {
+              final isSelected = _selectedInterests.contains(interest);
+              return InkWell(
+                onTap: () {
+                  setState(() {
+                    if (isSelected) {
+                      _selectedInterests.remove(interest);
+                    } else {
+                      _selectedInterests.add(interest);
+                    }
+                  });
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isSelected)
+                        const Icon(Icons.check, size: 16, color: Colors.white)
+                      else
+                        Icon(Icons.add, size: 16, color: AppColors.primary),
+                      const SizedBox(width: 6),
+                      Text(
+                        interest,
+                        style: AppTextStyles.body2.copyWith(
+                          color: isSelected ? Colors.white : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _birthDateController.dispose();
-    _therapyGoalsController.dispose();
-    super.dispose();
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _isSaving ? null : () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              side: BorderSide(color: AppColors.inputBorder, width: 2),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              'Отмена',
+              style: AppTextStyles.button.copyWith(color: AppColors.textPrimary),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            onPressed: _isSaving ? null : _saveProfile,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
+                  )
+                : Text('Сохранить изменения', style: AppTextStyles.button),
+          ),
+        ),
+      ],
+    );
   }
-}
 
-class _ProfileAction {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-  final Color? color;
-
-  _ProfileAction({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-    this.color,
-  });
+  String _formatDate(DateTime date) {
+    final months = [
+      'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
 }
