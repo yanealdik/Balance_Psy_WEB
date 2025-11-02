@@ -1,3 +1,4 @@
+import 'package:balance_psy/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -28,8 +29,23 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text.contains('@') &&
       _passwordController.text.length >= 6;
 
-  void _login() {
-    Navigator.pushReplacementNamed(context, AppRouter.dashboard);
+  void _login() async {
+    try {
+      await ApiService.login(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRouter.dashboard);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка входа: $e')));
+      }
+    }
   }
 
   @override
@@ -66,9 +82,7 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Padding(
                       padding: const EdgeInsets.all(40), // Уменьшено с 60
@@ -82,10 +96,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
 
         // Правая часть — иллюстрация
-        Expanded(
-          flex: 4,
-          child: _buildIllustrationSide(),
-        ),
+        Expanded(flex: 4, child: _buildIllustrationSide()),
       ],
     );
   }
@@ -164,8 +175,14 @@ class _LoginPageState extends State<LoginPage> {
           decoration: InputDecoration(
             hintText: 'example@email.com',
             hintStyle: AppTextStyles.inputHint,
-            prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            prefixIcon: const Icon(
+              Icons.email_outlined,
+              color: AppColors.primary,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.inputBorder),
@@ -194,15 +211,22 @@ class _LoginPageState extends State<LoginPage> {
           decoration: InputDecoration(
             hintText: 'Введите пароль',
             hintStyle: AppTextStyles.inputHint,
-            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
+            prefixIcon: const Icon(
+              Icons.lock_outline,
+              color: AppColors.primary,
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 _obscurePassword ? Icons.visibility_off : Icons.visibility,
                 color: AppColors.textSecondary,
               ),
-              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              onPressed: () =>
+                  setState(() => _obscurePassword = !_obscurePassword),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.inputBorder),
@@ -226,7 +250,8 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Checkbox(
               value: _rememberMe,
-              onChanged: (value) => setState(() => _rememberMe = value ?? false),
+              onChanged: (value) =>
+                  setState(() => _rememberMe = value ?? false),
               activeColor: AppColors.primary,
             ),
             Text('Запомнить меня', style: AppTextStyles.body2),
@@ -284,7 +309,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildSocialButton(String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildSocialButton(
+    String label,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
@@ -377,7 +406,9 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 60),
               child: Text(
                 'Профессиональная психологическая поддержка онлайн',
-                style: AppTextStyles.body1.copyWith(color: AppColors.textTertiary),
+                style: AppTextStyles.body1.copyWith(
+                  color: AppColors.textTertiary,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),

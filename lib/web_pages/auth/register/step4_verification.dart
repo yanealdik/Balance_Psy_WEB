@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:balance_psy/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../theme/app_colors.dart';
@@ -60,11 +61,19 @@ class _Step4VerificationState extends State<Step4Verification> {
       _resendTimer = 60;
     });
 
-    // TODO: Отправка кода на email
-    // POST /api/auth/send-verification-code
-    // Body: { "email": widget.userData.email }
-
-    _startResendTimer();
+    try {
+      await ApiService.sendVerificationCode(
+        email: widget.userData.email!,
+        isParentEmail: widget.userData.isMinor,
+      );
+      _startResendTimer();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
+    }
   }
 
   void _startResendTimer() {
@@ -88,17 +97,24 @@ class _Step4VerificationState extends State<Step4Verification> {
 
     setState(() => _isVerifying = true);
 
-    // TODO: Проверка кода на бэкенде
-    // POST /api/auth/verify-code
-    // Body: { "email": widget.userData.email, "code": code }
-    // Response: { "valid": true/false }
+    try {
+      await ApiService.verifyCode(
+        email: widget.userData.email!,
+        code: code,
+        isParentEmail: widget.userData.isMinor,
+      );
 
-    await Future.delayed(const Duration(seconds: 1));
-
-    setState(() => _isVerifying = false);
-
-    widget.userData.verificationCode = code;
-    widget.onNext();
+      setState(() => _isVerifying = false);
+      widget.userData.verificationCode = code;
+      widget.onNext();
+    } catch (e) {
+      setState(() => _isVerifying = false);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Неверный код: $e')));
+      }
+    }
   }
 
   void _onCodeChanged(int index, String value) {

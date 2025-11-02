@@ -1,3 +1,4 @@
+import 'package:balance_psy/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
@@ -99,11 +100,28 @@ class _RegisterMainState extends State<RegisterMain>
   }
 
   Future<void> _completeRegistration() async {
-    // TODO: Отправка данных регистрации на backend
-    // POST /api/auth/register
-    // Body: _userData.toJson()
+    try {
+      await ApiService.register(
+        email: _userData.email!,
+        password: _userData.password!,
+        passwordRepeat: _userData.password!,
+        fullName: _userData.name!,
+        dateOfBirth: _userData.birthDate!.toIso8601String().split('T')[0],
+        gender: _userData.gender!,
+        interests: _userData.interests,
+        registrationGoal: _userData.purposes.join(', '),
+      );
 
-    Navigator.pushReplacementNamed(context, '/dashboard');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка регистрации: $e')));
+      }
+    }
   }
 
   @override
