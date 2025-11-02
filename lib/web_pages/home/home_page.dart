@@ -1,8 +1,9 @@
+// lib/web_pages/home/home_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/page_wrapper.dart';
-import '../../widgets/custom_button.dart';
 import '../../сore/router/app_router.dart';
 
 class HomePage extends StatelessWidget {
@@ -15,592 +16,545 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
           _buildHeroSection(context),
-          _buildMissionSection(context),
-          _buildHowItWorksSection(context),
-          _buildPsychologistsSection(context),
+          _buildHelpSection(context),
           _buildStepsSection(context),
-          _buildCTASection(context),
+          _buildPsychologistsSection(context),
+          _buildArticlesPromoSection(context),
         ],
       ),
     );
   }
 
+  // ==============================================================
+  // HERO SECTION
+  // ==============================================================
   Widget _buildHeroSection(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 768;
-    final isTablet = width >= 768 && width < 1024;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : (isTablet ? 40 : 80),
-        vertical: isMobile ? 40 : 80,
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: isMobile ? 20 : 0),
+      decoration: const BoxDecoration(color: Color(0xFFF5F7FA)),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1300),
+          child: isMobile
+              ? Column(
+                  children: [
+                    _buildHeroContent(context, isMobile),
+                    const SizedBox(height: 24),
+                    _buildHeroImage(),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 60),
+                        child: _buildHeroContent(context, isMobile),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(flex: 6, child: _buildHeroImage()),
+                  ],
+                ),
+        ),
       ),
-      child: isMobile
-          ? Column(
-              children: [
-                _buildHeroContent(context, isMobile, isTablet),
-                const SizedBox(height: 40),
-                _buildHeroImage(isMobile),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(child: _buildHeroContent(context, isMobile, isTablet)),
-                const SizedBox(width: 60),
-                Expanded(child: _buildHeroImage(isMobile)),
-              ],
-            ),
     );
   }
 
-  Widget _buildHeroContent(BuildContext context, bool isMobile, bool isTablet) {
+  Widget _buildHeroContent(BuildContext context, bool isMobile) {
     return Column(
-      crossAxisAlignment: isMobile
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         Text(
-          'Сервис онлайн-психотерапии',
-          style: AppTextStyles.body2.copyWith(
-            fontSize: 16,
-            color: AppColors.primary,
-            fontWeight: FontWeight.w600,
-          ),
+          'Сервис онлайн психотерапии',
+          style: AppTextStyles.heroSubtitle,
           textAlign: isMobile ? TextAlign.center : TextAlign.left,
         ),
         const SizedBox(height: 16),
         Text.rich(
           TextSpan(
             children: [
-              TextSpan(
-                text: 'Твоя ',
-                style: AppTextStyles.h1.copyWith(fontSize: isMobile ? 32 : 48),
-              ),
-              TextSpan(
-                text: 'поддержка\n',
-                style: AppTextStyles.h1.copyWith(
-                  fontSize: isMobile ? 32 : 48,
-                  color: AppColors.primary,
-                ),
-              ),
-              TextSpan(
-                text: 'Твой ',
-                style: AppTextStyles.h1.copyWith(fontSize: isMobile ? 32 : 48),
-              ),
-              TextSpan(
-                text: 'баланс',
-                style: AppTextStyles.h1.copyWith(
-                  fontSize: isMobile ? 32 : 48,
-                  color: AppColors.primary,
-                ),
-              ),
+              TextSpan(text: 'Твоя ', style: AppTextStyles.heroTitle),
+              TextSpan(text: 'поддержка\n', style: AppTextStyles.heroTitleAccent),
+              TextSpan(text: 'Твой ', style: AppTextStyles.heroTitle),
+              TextSpan(text: 'баланс', style: AppTextStyles.heroTitleAccent),
             ],
           ),
           textAlign: isMobile ? TextAlign.center : TextAlign.left,
         ),
         const SizedBox(height: 24),
-        Text(
-          'Получите профессиональную психологическую помощь онлайн в удобное для вас время',
-          style: AppTextStyles.body1.copyWith(
-            fontSize: isMobile ? 16 : 18,
-            color: AppColors.textSecondary,
-          ),
-          textAlign: isMobile ? TextAlign.center : TextAlign.left,
-        ),
-        const SizedBox(height: 32),
         SizedBox(
           width: isMobile ? double.infinity : 240,
           height: 56,
-          child: CustomButton(
-            text: 'Выбрать психолога',
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRouter.psychologists),
-            isPrimary: true,
-            isFullWidth: true,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, AppRouter.psychologists);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF7095C6),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ),
+            child: Text('Выбрать психолога', style: AppTextStyles.button),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildHeroImage(bool isMobile) {
+  Widget _buildHeroImage() {
+    return Image.asset(
+      'assets/images/main_page/phone1.png',
+      fit: BoxFit.contain,
+      height: 650,
+      errorBuilder: (_, __, ___) => _buildImagePlaceholder(1350, Icons.phone_android),
+    );
+  }
+
+  // ==============================================================
+  // С ЧЕМ ПОМОГУТ ПСИХОЛОГИ
+  // ==============================================================
+  Widget _buildHelpSection(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width < 768;
+
     return Container(
-      height: isMobile ? 300 : 400,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary.withOpacity(0.1),
-            AppColors.primaryLight.withOpacity(0.15),
-          ],
-        ),
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: isMobile ? 10 : 30,
       ),
+      color: Colors.white,
       child: Center(
-        child: Icon(
-          Icons.phone_iphone_rounded,
-          size: isMobile ? 120 : 180,
-          color: AppColors.primary.withOpacity(0.3),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMissionSection(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final isMobile = width < 768;
-    final isTablet = width >= 768 && width < 1024;
-
-    final items = [
-      {'title': 'Справиться с тревогой и стрессом', 'emoji': '😰'},
-      {'title': 'Понять, почему трудно научиться доверять', 'emoji': '🤔'},
-      {
-        'title': 'Получить самообладание — получить свободу действий',
-        'emoji': '😌',
-      },
-      {
-        'title': 'Найти смысл — почувствовать что хочется предпринимать',
-        'emoji': '💪',
-      },
-    ];
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : (isTablet ? 40 : 80),
-        vertical: isMobile ? 40 : 80,
-      ),
-      color: Colors.white,
-      child: Column(
-        children: [
-          Text(
-            'С чем помогут психологи',
-            style: AppTextStyles.h1.copyWith(fontSize: isMobile ? 28 : 40),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 48),
-          Wrap(
-            spacing: 24,
-            runSpacing: 24,
-            alignment: WrapAlignment.center,
-            children: items
-                .map((item) => _buildMissionCard(item, isMobile, isTablet))
-                .toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMissionCard(
-    Map<String, String> item,
-    bool isMobile,
-    bool isTablet,
-  ) {
-    final cardWidth = isMobile ? double.infinity : (isTablet ? 300.0 : 260.0);
-
-    return Container(
-      width: cardWidth,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(item['emoji']!, style: const TextStyle(fontSize: 40)),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            item['title']!,
-            style: AppTextStyles.body1.copyWith(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHowItWorksSection(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final isMobile = width < 768;
-    final isTablet = width >= 768 && width < 1024;
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : (isTablet ? 40 : 80),
-        vertical: isMobile ? 40 : 80,
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Как это работает',
-            style: AppTextStyles.h1.copyWith(fontSize: isMobile ? 28 : 40),
-          ),
-          const SizedBox(height: 48),
-          isMobile
-              ? Column(
-                  children: [
-                    _buildHowItWorksStep(
-                      '1',
-                      'Регистрация',
-                      'Создайте аккаунт за 2 минуты',
-                    ),
-                    const SizedBox(height: 24),
-                    _buildHowItWorksStep(
-                      '2',
-                      'Выбор психолога',
-                      'Подберите специалиста под ваш запрос',
-                    ),
-                    const SizedBox(height: 24),
-                    _buildHowItWorksStep(
-                      '3',
-                      'Консультация',
-                      'Проведите сеанс онлайн в удобное время',
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: _buildHowItWorksStep(
-                        '1',
-                        'Регистрация',
-                        'Создайте аккаунт за 2 минуты',
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: _buildHowItWorksStep(
-                        '2',
-                        'Выбор психолога',
-                        'Подберите специалиста под ваш запрос',
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: _buildHowItWorksStep(
-                        '3',
-                        'Консультация',
-                        'Проведите сеанс онлайн в удобное время',
-                      ),
-                    ),
-                  ],
-                ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHowItWorksStep(String number, String title, String description) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                number,
-                style: AppTextStyles.h2.copyWith(color: Colors.white),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(title, style: AppTextStyles.h3),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: AppTextStyles.body2,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPsychologistsSection(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final isMobile = width < 768;
-    final isTablet = width >= 768 && width < 1024;
-
-    final psychologists = [
-      {'name': 'Дария Аубакирова', 'spec': '8 лет опыта', 'rating': '4.9'},
-      {'name': 'Яна Прозорова', 'spec': '10 лет опыта', 'rating': '5.0'},
-      {'name': 'Лаура Болдина', 'spec': '7 лет опыта', 'rating': '4.8'},
-    ];
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : (isTablet ? 40 : 80),
-        vertical: isMobile ? 40 : 80,
-      ),
-      color: Colors.white,
-      child: Column(
-        children: [
-          Text(
-            'Команда психологов',
-            style: AppTextStyles.h1.copyWith(fontSize: isMobile ? 28 : 40),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Специализированные психологи со стажем работы',
-            style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 48),
-          Wrap(
-            spacing: 24,
-            runSpacing: 24,
-            alignment: WrapAlignment.center,
-            children: psychologists
-                .map((psy) => _buildPsychologistCard(psy, isMobile, isTablet))
-                .toList(),
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: isMobile ? double.infinity : 200,
-            height: 48,
-            child: CustomButton(
-              text: 'Все специалисты',
-              onPressed: () =>
-                  Navigator.pushNamed(context, AppRouter.psychologists),
-              isPrimary: false,
-              isFullWidth: true,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPsychologistCard(
-    Map<String, String> psy,
-    bool isMobile,
-    bool isTablet,
-  ) {
-    final cardWidth = isMobile ? double.infinity : (isTablet ? 280.0 : 300.0);
-
-    return Container(
-      width: cardWidth,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 2),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.person, size: 60, color: AppColors.primary),
-          ),
-          const SizedBox(height: 16),
-          Text(psy['name']!, style: AppTextStyles.h3),
-          const SizedBox(height: 8),
-          Text(psy['spec']!, style: AppTextStyles.body2),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1120),
+          child: Stack(
             children: [
-              const Icon(Icons.star, color: AppColors.warning, size: 20),
-              const SizedBox(width: 4),
-              Text(psy['rating']!, style: AppTextStyles.body1),
+              _buildFeaturesImage(isMobile),
+              Positioned(
+                top: isMobile ? 65 : 95,
+                left: isMobile ? -70 : -50,
+                child: SizedBox(
+                  width: isMobile ? 300 : 400,
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'С чем\n',
+                          style: isMobile
+                              ? AppTextStyles.helpTitleMobile.copyWith(height: 0.9)
+                              : AppTextStyles.helpTitle.copyWith(height: 0.9),
+                        ),
+                        TextSpan(
+                          text: 'помогут\n',
+                          style: isMobile
+                              ? AppTextStyles.helpTitleAccentMobile.copyWith(height: 0.9)
+                              : AppTextStyles.helpTitleAccent.copyWith(height: 0.9),
+                        ),
+                        TextSpan(
+                          text: 'психологи',
+                          style: isMobile
+                              ? AppTextStyles.helpTitleMobile.copyWith(height: 0.9)
+                              : AppTextStyles.helpTitle.copyWith(height: 0.9),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
+  Widget _buildFeaturesImage(bool isMobile) {
+    return Image.asset(
+      'assets/images/main_page/features-2.png',
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: isMobile ? 410 : 540,
+      errorBuilder: (_, __, ___) => _buildImagePlaceholder(540, Icons.psychology, color: Colors.grey),
+    );
+  }
+
+  // ==============================================================
+  // СДЕЛАЙ ШАГ К ЗАБОТЕ О СЕБЕ
+  // ==============================================================
   Widget _buildStepsSection(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 768;
-    final isTablet = width >= 768 && width < 1024;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : (isTablet ? 40 : 80),
-        vertical: isMobile ? 40 : 80,
-      ),
+      width: double.infinity,
+      color: const Color(0xFFF5F7FA),
+      child: isMobile ? _buildStepsMobile() : _buildStepsDesktop(),
+    );
+  }
+
+  Widget _buildStepsMobile() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
       child: Column(
         children: [
-          Text(
-            'Сделай шаг к заботе о себе',
-            style: AppTextStyles.h1.copyWith(fontSize: isMobile ? 28 : 40),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 48),
-          isMobile
-              ? Column(
-                  children: [
-                    _buildStepCard(
-                      '1',
-                      'Укажите темы, с которыми хотите поработать',
+          _buildStepsTitle(),
+          const SizedBox(height: 40),
+          _buildStepsImage(),
+          const SizedBox(height: 40),
+          _buildStepsListHorizontal(isMobile: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStepsDesktop() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 700,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(right: 0, top: 50, child: _buildStepsImage()),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 100),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1120),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildStepsTitle(),
+                        const SizedBox(height: 60),
+                        _buildStepsListHorizontal(isMobile: false),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    _buildStepCard(
-                      '2',
-                      'Выберите комфортную для себя стоимость сессии',
-                    ),
-                    const SizedBox(height: 24),
-                    _buildStepCard(
-                      '3',
-                      'Получите подборку опытных специалистов под ваш запрос',
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: _buildStepCard(
-                        '1',
-                        'Укажите темы, с которыми хотите поработать',
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: _buildStepCard(
-                        '2',
-                        'Выберите комфортную для себя стоимость сессии',
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: _buildStepCard(
-                        '3',
-                        'Получите подборку опытных специалистов под ваш запрос',
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-          const SizedBox(height: 48),
-          SizedBox(
-            width: isMobile ? double.infinity : 280,
-            height: 56,
-            child: CustomButton(
-              text: 'Начать прямо сейчас',
-              onPressed: () => Navigator.pushNamed(context, AppRouter.register),
-              isPrimary: true,
-              isFullWidth: true,
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 40),
+      ],
     );
   }
 
-  Widget _buildStepCard(String number, String text) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
+  Widget _buildStepsTitle() {
+    return Text.rich(
+      TextSpan(
         children: [
-          Text(
-            number,
-            style: AppTextStyles.h1.copyWith(
-              fontSize: 48,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(text, style: AppTextStyles.body1, textAlign: TextAlign.center),
+          TextSpan(text: 'Сделай шаг к ', style: AppTextStyles.stepsTitle),
+          TextSpan(text: 'заботе\n', style: AppTextStyles.stepsTitleAccent),
+          TextSpan(text: 'о себе', style: AppTextStyles.stepsTitle),
         ],
       ),
     );
   }
 
-  Widget _buildCTASection(BuildContext context) {
+  Widget _buildStepsImage() {
+    return SvgPicture.asset(
+      'assets/images/main_page/woman.svg',
+      width: 1029,
+      height: 566,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => _buildImagePlaceholder(566, Icons.person, background: Colors.orange[300]),
+    );
+  }
+
+  Widget _buildStepsListHorizontal({required bool isMobile}) {
+    final step = (String num, String title, String desc) => ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 300),
+          child: _buildStepItemCompact(num, title, desc)
+        );
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildStepItemCompact('1', 'Укажите темы, с которыми хотите поработать',
+              'Это могут быть тревожность, выгорание, сложности в отношениях, самооценка и многое другое.'),
+          const SizedBox(height: 24),
+          _buildStepItemCompact('2', 'Выберите комфортную для себя стоимость сессии',
+              'Это могут быть тревожность, выгорание, сложности в отношениях, самооценка и многое другое.'),
+          const SizedBox(height: 24),
+          _buildStepItemCompact('3', 'Получите подборку опытных специалистов под ваш запрос',
+              'Это могут быть тревожность, выгорание, сложности в отношениях, самооценка и многое другое.'),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        step('1', 'Укажите темы, с которыми хотите поработать',
+            'Это могут быть тревожность, выгорание, сложности в отношениях, самооценка и многое другое.'),
+        const SizedBox(width: 20),
+        step('2', 'Выберите комфортную для себя стоимость сессии',
+            'Это могут быть тревожность, выгорание, сложности в отношениях, самооценка и многое другое.'),
+        const SizedBox(width: 20),
+        step('3', 'Получите подборку опытных специалистов под ваш запрос',
+            'Это могут быть тревожность, выгорание, сложности в отношениях, самооценка и многое другое.'),
+      ],
+    );
+  }
+
+  Widget _buildStepItemCompact(String number, String title, String description) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(number, style: AppTextStyles.stepNumber),
+        const SizedBox(height: 8),
+        Text(title, style: AppTextStyles.stepTitle),
+        const SizedBox(height: 6),
+        Text(description, style: AppTextStyles.stepDescription),
+      ],
+    );
+  }
+
+  // ==============================================================
+  // КОМАНДА ПСИХОЛОГОВ
+  // ==============================================================
+  Widget _buildPsychologistsSection(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 768;
 
     return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : 80,
-        vertical: isMobile ? 40 : 80,
-      ),
-      padding: EdgeInsets.all(isMobile ? 32 : 60),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryDark],
+      width: double.infinity,
+      color: const Color(0xFFF5F7FA),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80, vertical: 60),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1120),
+          child: Column(
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Команда ',
+                      style: isMobile ? AppTextStyles.teamTitleMobile : AppTextStyles.teamTitle,
+                    ),
+                    TextSpan(
+                      text: 'психологов',
+                      style: isMobile ? AppTextStyles.teamTitleAccentMobile : AppTextStyles.teamTitleAccent,
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Специализированные психологи со стажем работы',
+                style: AppTextStyles.teamSubtitle,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 60),
+              Wrap(
+                spacing: 40,
+                runSpacing: 40,
+                alignment: WrapAlignment.center,
+                children: [
+                  _buildPsychologistCard('Галия Аубакирова', '7 лет опыта',
+                      'Психолог, нутрициолог взрослый и детский', 'galiya1.png'),
+                  _buildPsychologistCard('Яна Прозорова', '15 лет опыта',
+                      'Психолог (КПТ, схема терапия)', 'yana1.png'),
+                  _buildPsychologistCard('Лаура Болдина', '7 лет опыта',
+                      'Психолог (КПТ, гештальт)', 'laura1.png'),
+                ],
+              ),
+            ],
+          ),
         ),
-        borderRadius: BorderRadius.circular(24),
       ),
+    );
+  }
+
+  Widget _buildPsychologistCard(String name, String experience, String spec, String imageName) {
+    return SizedBox(
+      width: 300,
       child: Column(
         children: [
-          Text(
-            'Готовы начать путь к балансу?',
-            style: AppTextStyles.h1.copyWith(
-              fontSize: isMobile ? 28 : 36,
-              color: Colors.white,
+          Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF7095C6), width: 4),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Зарегистрируйтесь прямо сейчас и получите первую консультацию',
-            style: AppTextStyles.body1.copyWith(
-              fontSize: 18,
-              color: Colors.white.withOpacity(0.9),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: isMobile ? double.infinity : 240,
-            height: 56,
-            child: CustomButton(
-              text: 'Регистрация',
-              onPressed: () => Navigator.pushNamed(context, AppRouter.register),
-              isPrimary: false,
-              isFullWidth: true,
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/main_page/$imageName',
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: const Color(0xFF7095C6).withOpacity(0.2),
+                  child: const Icon(Icons.person, size: 80, color: Color(0xFF7095C6)),
+                ),
+              ),
             ),
           ),
+          const SizedBox(height: 20),
+          Text(name, style: AppTextStyles.psychologistName, textAlign: TextAlign.center),
+          const SizedBox(height: 8),
+          Text(experience, style: AppTextStyles.psychologistExperience, textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(spec, style: AppTextStyles.psychologistSpec, textAlign: TextAlign.center),
         ],
       ),
+    );
+  }
+
+  // ==============================================================
+  // БЛОК СТАТЕЙ — ТЕКСТ И ТЕЛЕФОН СДВИНУТЫ ВПРАВО + ВНИЗ
+  // ==============================================================
+  Widget _buildArticlesPromoSection(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width < 768;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: isMobile ? 60 : 100,
+      ),
+      color: Colors.white,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1120),
+          child: isMobile ? _buildArticlesMobile() : _buildArticlesDesktop(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticlesDesktop() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Телефон сдвинут правее
+        Image.asset(
+          'assets/images/main_page/phone2.png',
+          width: 320,
+          height: 520,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _buildPhonePlaceholder(320, 520),
+        ),
+        const SizedBox(width: 60), // Было 40 → теперь 60
+
+        // Текст: вниз + вправо
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 30), // Сдвиг вправо
+            child: _buildArticlesText(textAlign: TextAlign.left),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArticlesMobile() {
+    return Column(
+      children: [
+        Image.asset(
+          'assets/images/main_page/phone2.png',
+          width: 220,
+          height: 400,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _buildPhonePlaceholder(220, 400),
+        ),
+        const SizedBox(height: 32),
+        _buildArticlesText(textAlign: TextAlign.center),
+      ],
+    );
+  }
+
+  
+  Widget _buildArticlesText({TextAlign textAlign = TextAlign.left}) {
+    return Column(
+      crossAxisAlignment:
+          textAlign == TextAlign.center ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        // Заголовок опущен ниже
+        const SizedBox(height: 42), // Было 24 → теперь 32
+        Text(
+          'BalancePsy',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF454545),
+            height: 1.2,
+          ),
+          textAlign: textAlign,
+        ),
+        const SizedBox(height: 16),
+
+        // Строка 1
+        Text(
+          'Читайте актуальные',
+          style: AppTextStyles.stepsTitle.copyWith(height: 1.0),
+          textAlign: textAlign,
+        ),
+
+        // Строка 3 — "статьи от наших"
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: 'статьи ',
+                style: AppTextStyles.stepsTitleAccent.copyWith(height: 1.0),
+              ),
+              TextSpan(
+                text: 'от наших',
+                style: AppTextStyles.stepsTitle.copyWith(height: 1.0),
+              ),
+            ],
+          ),
+          textAlign: textAlign,
+        ),
+
+        // Строка 4 — "психологов" отдельно
+        Text(
+          'психологов',
+          style: AppTextStyles.stepsTitle.copyWith(height: 1.0),
+          textAlign: textAlign,
+        ),
+      ],
+    );
+  }
+
+  // ==============================================================
+  // УТИЛИТЫ
+  // ==============================================================
+  Widget _buildImagePlaceholder(double height, IconData icon, {Color? background, Color? color}) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: background ?? Colors.grey[200],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Center(
+        child: Icon(icon, size: 100, color: color ?? Colors.grey),
+      ),
+    );
+  }
+
+  Widget _buildPhonePlaceholder(double width, double height) {
+    return Container(
+      width: width,
+      height: height,
+      color: Colors.grey[200],
+      child: const Icon(Icons.phone_android, size: 90, color: Colors.grey),
     );
   }
 }
