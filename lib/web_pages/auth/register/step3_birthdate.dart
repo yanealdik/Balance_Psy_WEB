@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/WEB/web_button.dart';
 import '../../../models/user_register_model.dart';
 
 class Step3Birthdate extends StatefulWidget {
@@ -61,7 +61,6 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
         _selectedDate = picked;
         widget.userData.birthDate = picked;
 
-        // Проверка возраста
         final age = widget.userData.getAge();
         widget.userData.isMinor = (age != null && age < 18);
       });
@@ -93,24 +92,29 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 24 : 60),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 24 : 48,
+          vertical: isMobile ? 32 : 48,
+        ),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(
+            maxWidth: isMobile ? double.infinity : 900,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(isMobile),
-              SizedBox(height: isMobile ? 32 : 48),
+              SizedBox(height: isMobile ? 40 : 56),
               _buildDateSelector(isMobile),
               if (_selectedDate != null) ...[
-                SizedBox(height: isMobile ? 24 : 32),
+                const SizedBox(height: 24),
                 _buildAgeInfo(isMobile),
               ],
               if (widget.userData.isMinor) ...[
-                SizedBox(height: isMobile ? 24 : 32),
+                const SizedBox(height: 24),
                 _buildMinorWarning(isMobile),
               ],
-              SizedBox(height: isMobile ? 32 : 48),
+              SizedBox(height: isMobile ? 40 : 56),
               _buildButtons(isMobile),
             ],
           ),
@@ -127,10 +131,13 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
           'Дата рождения',
           style: isMobile ? AppTextStyles.h2 : AppTextStyles.h1,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           'Эта информация поможет подобрать подходящего специалиста',
-          style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+          style: AppTextStyles.body1.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
         ),
       ],
     );
@@ -144,7 +151,7 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
           'Выберите дату',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         InkWell(
           onTap: _selectDate,
           borderRadius: BorderRadius.circular(12),
@@ -186,9 +193,9 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
                         style: _selectedDate != null
                             ? AppTextStyles.body1.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 18,
+                                fontSize: 16,
                               )
-                            : AppTextStyles.inputHint.copyWith(fontSize: 18),
+                            : AppTextStyles.inputHint.copyWith(fontSize: 16),
                       ),
                       if (_selectedDate != null) ...[
                         const SizedBox(height: 4),
@@ -226,11 +233,14 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
       child: Row(
         children: [
           Icon(Icons.check_circle_outline, color: AppColors.success, size: 24),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               'Отлично! Ваш возраст позволяет пользоваться всеми функциями платформы',
-              style: AppTextStyles.body2.copyWith(color: AppColors.textPrimary),
+              style: AppTextStyles.body2.copyWith(
+                color: AppColors.textPrimary,
+                height: 1.5,
+              ),
             ),
           ),
         ],
@@ -252,7 +262,7 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
           Row(
             children: [
               Icon(Icons.info_outline, color: AppColors.warning, size: 24),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   'Требуется согласие родителя',
@@ -267,7 +277,10 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
           const SizedBox(height: 12),
           Text(
             'Вам меньше 18 лет. Для использования платформы потребуется подтверждение от родителя или законного представителя. Мы отправим запрос на email, который вы укажете на следующем шаге.',
-            style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.body2.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
           ),
         ],
       ),
@@ -281,7 +294,7 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
           SizedBox(
             width: 140,
             height: 56,
-            child: CustomButton(
+            child: WebButton(
               text: 'Назад',
               onPressed: widget.onBack,
               isPrimary: false,
@@ -290,15 +303,16 @@ class _Step3BirthdateState extends State<Step3Birthdate> {
           ),
           const SizedBox(width: 16),
         ],
-        SizedBox(
-          width: isMobile ? double.infinity : 220,
-          height: 56,
-          child: CustomButton(
-            text: 'Продолжить',
-            onPressed: _selectedDate != null ? widget.onNext : null,
-            isPrimary: true,
-            isFullWidth: true,
-            showArrow: true,
+        Expanded(
+          child: SizedBox(
+            height: 56,
+            child: WebButton(
+              text: 'Продолжить',
+              onPressed: _selectedDate != null ? widget.onNext : null,
+              isPrimary: true,
+              isFullWidth: true,
+              showArrow: true,
+            ),
           ),
         ),
       ],

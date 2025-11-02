@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/WEB/web_button.dart';
 import '../../../models/user_register_model.dart';
 
 class Step1UserInfo extends StatefulWidget {
@@ -89,22 +89,27 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 24 : 60),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 24 : 48,
+          vertical: isMobile ? 32 : 48,
+        ),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(
+            maxWidth: isMobile ? double.infinity : 900,
+          ),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(isMobile),
-                SizedBox(height: isMobile ? 32 : 48),
+                SizedBox(height: isMobile ? 40 : 56),
                 _buildNameField(isMobile),
-                SizedBox(height: isMobile ? 24 : 32),
+                const SizedBox(height: 32),
                 _buildGenderSelection(isMobile),
-                SizedBox(height: isMobile ? 24 : 32),
+                const SizedBox(height: 32),
                 _buildPurposesSection(isMobile),
-                SizedBox(height: isMobile ? 32 : 48),
+                SizedBox(height: isMobile ? 40 : 56),
                 _buildNextButton(isMobile),
               ],
             ),
@@ -122,10 +127,13 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
           'Расскажите о себе',
           style: isMobile ? AppTextStyles.h2 : AppTextStyles.h1,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           'Эта информация поможет нам подобрать подходящих специалистов',
-          style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+          style: AppTextStyles.body1.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
         ),
       ],
     );
@@ -139,7 +147,7 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
           'Ваше имя',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextFormField(
           controller: _nameController,
           style: AppTextStyles.input,
@@ -192,7 +200,7 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
           'Пол',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
@@ -235,7 +243,7 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.all(isMobile ? 14 : 16),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -250,9 +258,9 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
             Icon(
               icon,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              size: 20,
+              size: 22,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Text(
               label,
               style: AppTextStyles.body1.copyWith(
@@ -274,7 +282,7 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
           'Что привело вас к нам?',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           'Выберите одну или несколько целей',
           style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary),
@@ -299,9 +307,12 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
               borderRadius: BorderRadius.circular(12),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 14 : 16,
-                  vertical: isMobile ? 10 : 12,
+                constraints: BoxConstraints(
+                  minWidth: isMobile ? double.infinity : 210,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
@@ -314,25 +325,27 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
                   ),
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: isMobile ? MainAxisSize.max : MainAxisSize.min,
                   children: [
                     Icon(
                       isSelected ? Icons.check_circle : purpose.icon,
                       color: isSelected
                           ? purpose.color
                           : AppColors.textSecondary,
-                      size: 18,
+                      size: 22,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      purpose.title,
-                      style: AppTextStyles.body2.copyWith(
-                        color: isSelected
-                            ? purpose.color
-                            : AppColors.textPrimary,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Text(
+                        purpose.title,
+                        style: AppTextStyles.body2.copyWith(
+                          color: isSelected
+                              ? purpose.color
+                              : AppColors.textPrimary,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -346,18 +359,15 @@ class _Step1UserInfoState extends State<Step1UserInfo> {
   }
 
   Widget _buildNextButton(bool isMobile) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: SizedBox(
-        width: isMobile ? double.infinity : 240,
-        height: 56,
-        child: CustomButton(
-          text: 'Продолжить',
-          onPressed: _canContinue ? _handleNext : null,
-          isPrimary: true,
-          isFullWidth: true,
-          showArrow: true,
-        ),
+    return SizedBox(
+      width: isMobile ? double.infinity : 240,
+      height: 56,
+      child: WebButton(
+        text: 'Продолжить',
+        onPressed: _canContinue ? _handleNext : null,
+        isPrimary: true,
+        isFullWidth: true,
+        showArrow: true,
       ),
     );
   }

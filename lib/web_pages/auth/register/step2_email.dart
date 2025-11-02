@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/WEB/web_button.dart';
 import '../../../models/user_register_model.dart';
 
 class Step2Email extends StatefulWidget {
@@ -50,11 +50,10 @@ class _Step2EmailState extends State<Step2Email> {
     // GET /api/auth/check-email?email=${_emailController.text}
     // Response: { "available": true/false }
 
-    await Future.delayed(const Duration(seconds: 1)); // Симуляция запроса
+    await Future.delayed(const Duration(seconds: 1));
 
     setState(() => _isChecking = false);
 
-    // Если email доступен, переходим дальше
     widget.userData.email = _emailController.text;
     widget.onNext();
   }
@@ -66,20 +65,25 @@ class _Step2EmailState extends State<Step2Email> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 24 : 60),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 24 : 48,
+          vertical: isMobile ? 32 : 48,
+        ),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(
+            maxWidth: isMobile ? double.infinity : 900,
+          ),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(isMobile),
-                SizedBox(height: isMobile ? 32 : 48),
+                SizedBox(height: isMobile ? 40 : 56),
                 _buildEmailField(isMobile),
-                SizedBox(height: isMobile ? 24 : 32),
+                const SizedBox(height: 24),
                 _buildInfoCard(isMobile),
-                SizedBox(height: isMobile ? 32 : 48),
+                SizedBox(height: isMobile ? 40 : 56),
                 _buildButtons(isMobile),
               ],
             ),
@@ -97,10 +101,13 @@ class _Step2EmailState extends State<Step2Email> {
           'Email адрес',
           style: isMobile ? AppTextStyles.h2 : AppTextStyles.h1,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           'Укажите email для входа и получения уведомлений',
-          style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+          style: AppTextStyles.body1.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
         ),
       ],
     );
@@ -114,7 +121,7 @@ class _Step2EmailState extends State<Step2Email> {
           'Email',
           style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextFormField(
           controller: _emailController,
           style: AppTextStyles.input,
@@ -176,7 +183,7 @@ class _Step2EmailState extends State<Step2Email> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.info_outline, color: AppColors.primary, size: 24),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,11 +195,12 @@ class _Step2EmailState extends State<Step2Email> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   'Мы отправим код подтверждения на этот адрес. Также вы будете получать уведомления о консультациях и новых материалах.',
                   style: AppTextStyles.body2.copyWith(
                     color: AppColors.textSecondary,
+                    height: 1.5,
                   ),
                 ),
               ],
@@ -204,13 +212,17 @@ class _Step2EmailState extends State<Step2Email> {
   }
 
   Widget _buildButtons(bool isMobile) {
+    final canContinue =
+        _emailController.text.isNotEmpty &&
+        _isValidEmail(_emailController.text);
+
     return Row(
       children: [
         if (!isMobile) ...[
           SizedBox(
             width: 140,
             height: 56,
-            child: CustomButton(
+            child: WebButton(
               text: 'Назад',
               onPressed: widget.onBack,
               isPrimary: false,
@@ -219,20 +231,18 @@ class _Step2EmailState extends State<Step2Email> {
           ),
           const SizedBox(width: 16),
         ],
-        SizedBox(
-          width: isMobile ? double.infinity : 220,
-          height: 56,
-          child: CustomButton(
-            text: _isChecking ? 'Проверка...' : 'Продолжить',
-            onPressed: _isChecking
-                ? null
-                : (_emailController.text.isNotEmpty &&
-                          _isValidEmail(_emailController.text)
-                      ? _checkEmailAvailability
-                      : null),
-            isPrimary: true,
-            isFullWidth: true,
-            showArrow: !_isChecking,
+        Expanded(
+          child: SizedBox(
+            height: 56,
+            child: WebButton(
+              text: _isChecking ? 'Проверка...' : 'Продолжить',
+              onPressed: _isChecking
+                  ? null
+                  : (canContinue ? _checkEmailAvailability : null),
+              isPrimary: true,
+              isFullWidth: true,
+              showArrow: !_isChecking,
+            ),
           ),
         ),
       ],
