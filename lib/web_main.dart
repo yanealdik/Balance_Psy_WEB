@@ -1,9 +1,8 @@
+// lib/web_main.dart
 import 'package:flutter/material.dart';
 import 'theme/app_colors.dart';
 import 'сore/router/app_router.dart';
 
-/// Entry point для веб-версии BalancePsy
-/// Запуск: flutter run -d chrome -t lib/web_main.dart
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const BalancePsyWeb());
@@ -22,51 +21,27 @@ class BalancePsyWeb extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.backgroundLight,
         fontFamily: 'Manrope',
         useMaterial3: true,
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
           primary: AppColors.primary,
           secondary: AppColors.primaryLight,
           background: AppColors.background,
           surface: AppColors.cardBackground,
           error: AppColors.error,
         ),
-        // Настройки текстовой темы
         textTheme: const TextTheme(
-          displayLarge: TextStyle(
-            fontSize: 48,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-          displayMedium: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-          displaySmall: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-          bodyLarge: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: AppColors.textPrimary,
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppColors.textSecondary,
-          ),
+          displayLarge: TextStyle(fontSize: 48, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          displayMedium: TextStyle(fontSize: 36, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          displaySmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
+          bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
         ),
-        // Настройки кнопок
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
@@ -74,12 +49,9 @@ class BalancePsyWeb extends StatelessWidget {
             foregroundColor: AppColors.primary,
             side: const BorderSide(color: AppColors.primary, width: 2),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
-        // Настройки полей ввода
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppColors.inputBackground,

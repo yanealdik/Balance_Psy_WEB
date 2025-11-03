@@ -1,4 +1,4 @@
-// lib/web_pages/auth/login_page.dart
+// lib/web_pages/psycho/psycho_login.dart
 
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
@@ -6,14 +6,14 @@ import '../../theme/app_text_styles.dart';
 import '../../widgets/custom_button.dart';
 import '../../сore/router/app_router.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class PsychoLoginPage extends StatefulWidget {
+  const PsychoLoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<PsychoLoginPage> createState() => _PsychoLoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _PsychoLoginPageState extends State<PsychoLoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -30,11 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text.contains('@') &&
       _passwordController.text.length >= 6;
 
-  void _loginAsPatient() {
-    Navigator.pushReplacementNamed(context, AppRouter.dashboard);
-  }
-
-  void _loginAsPsychologist() {
+  void _login() {
     Navigator.pushReplacementNamed(context, AppRouter.psychoDashboard);
   }
 
@@ -45,9 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: isMobile
-          ? _buildMobileLayout()
-          : _buildDesktopLayout(),
+      body: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
     );
   }
 
@@ -69,9 +63,7 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Padding(
                       padding: const EdgeInsets.all(40),
@@ -83,10 +75,7 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
         ),
-        Expanded(
-          flex: 4,
-          child: _buildIllustrationSide(),
-        ),
+        Expanded(flex: 4, child: _buildIllustrationSide()),
       ],
     );
   }
@@ -100,10 +89,16 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           _buildLogo(),
           const SizedBox(height: 32),
-          Text('Вход в аккаунт', style: AppTextStyles.h1),
+          Row(
+            children: [
+              Icon(Icons.psychology, color: AppColors.primary, size: 32),
+              const SizedBox(width: 12),
+              Text('Вход для психологов', style: AppTextStyles.h1),
+            ],
+          ),
           const SizedBox(height: 12),
           Text(
-            'Выберите тип аккаунта для входа',
+            'Войдите в личный кабинет специалиста',
             style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 32),
@@ -113,52 +108,9 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 16),
           _buildRememberAndForgot(),
           const SizedBox(height: 28),
-          // Кнопка входа для пациентов
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: CustomButton(
-              text: 'Войти как клиент',
-              onPressed: _canLogin ? _loginAsPatient : null,
-              isPrimary: true,
-              isFullWidth: true,
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Кнопка входа для психологов
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: OutlinedButton(
-              onPressed: _canLogin ? _loginAsPsychologist : null,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primary, width: 2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.psychology_outlined, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Войти как психолог',
-                    style: AppTextStyles.button.copyWith(
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildDivider(),
-          const SizedBox(height: 20),
-          _buildSocialButtons(),
+          _buildLoginButton(),
           const SizedBox(height: 28),
-          _buildRegisterLink(),
+          _buildBackToHome(),
         ],
       ),
     );
@@ -200,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
           style: AppTextStyles.input,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: 'example@email.com',
+            hintText: 'psychologist@email.com',
             hintStyle: AppTextStyles.inputHint,
             prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -281,79 +233,31 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        const Expanded(child: Divider(color: AppColors.textTertiary)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'или',
-            style: AppTextStyles.body2.copyWith(color: AppColors.textTertiary),
-          ),
-        ),
-        const Expanded(child: Divider(color: AppColors.textTertiary)),
-      ],
-    );
-  }
-
-  Widget _buildSocialButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildSocialButton('Google', Icons.g_mobiledata, () {}),
-        ),
-        const SizedBox(width: 16),
-        Expanded(child: _buildSocialButton('Facebook', Icons.facebook, () {})),
-      ],
-    );
-  }
-
-  Widget _buildSocialButton(String label, IconData icon, VoidCallback onPressed) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        side: const BorderSide(color: AppColors.inputBorder, width: 2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: AppColors.textPrimary),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: AppTextStyles.body1.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+  Widget _buildLoginButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: CustomButton(
+        text: 'Войти в кабинет',
+        onPressed: _canLogin ? _login : null,
+        isPrimary: true,
+        isFullWidth: true,
       ),
     );
   }
 
-  Widget _buildRegisterLink() {
+  Widget _buildBackToHome() {
     return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Нет аккаунта? ',
-            style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+      child: TextButton.icon(
+        onPressed: () => Navigator.pushNamed(context, AppRouter.home),
+        icon: const Icon(Icons.arrow_back, size: 18),
+        label: Text(
+          'Вернуться на главную',
+          style: AppTextStyles.body1.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
           ),
-          TextButton(
-            onPressed: () => Navigator.pushNamed(context, AppRouter.register),
-            child: Text(
-              'Зарегистрироваться',
-              style: AppTextStyles.body1.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -383,7 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.psychology_outlined,
+                Icons.psychology,
                 size: 140,
                 color: AppColors.primary.withOpacity(0.5),
               ),
@@ -392,7 +296,7 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'Профессиональная психологическая поддержка',
+                'Личный кабинет специалиста',
                 style: AppTextStyles.h3.copyWith(fontSize: 20),
                 textAlign: TextAlign.center,
               ),
@@ -401,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 60),
               child: Text(
-                'Для клиентов и психологов',
+                'Управляйте расписанием, общайтесь с клиентами и развивайте свою практику',
                 style: AppTextStyles.body1.copyWith(color: AppColors.textTertiary),
                 textAlign: TextAlign.center,
               ),

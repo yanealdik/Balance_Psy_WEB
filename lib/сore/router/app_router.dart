@@ -15,9 +15,16 @@ import '../../web_pages/profile_patient/home_patient.dart';
 import '../../web_pages/profile_patient/profile_patient.dart';
 import '../../web_pages/profile_patient/contacts_patient.dart';
 import '../../web_pages/profile_patient/chat_patient.dart';
+import '../../web_pages/psycho/psycho_dashboard.dart';
+import '../../web_pages/psycho/psycho_schedule.dart';
+import '../../web_pages/psycho/psycho_messages.dart';
+import '../../web_pages/psycho/psycho_reports.dart';
+import '../../web_pages/psycho/psycho_profile.dart';
+import '../../web_pages/profile_patient/sessions_calendar.dart';
 
 /// Централизованный роутинг для веб-версии BalancePsy
 class AppRouter {
+  // Основные маршруты
   static const String home = '/';
   static const String login = '/login';
   static const String register = '/register';
@@ -29,13 +36,25 @@ class AppRouter {
   static const String articleReader = '/article-reader';
   static const String services = '/services';
   static const String contacts = '/contacts';
+  
+  // Пациент
   static const String dashboard = '/dashboard';
   static const String profile = '/profile';
   static const String contactsPatient = '/contacts-patient';
   static const String chatPatient = '/chat-patient';
+  static const String sessionsCalendar = '/sessions-calendar';
+  static const String diary = '/diary';
+
+  // Психолог
+  static const String psychoDashboard = '/psycho/dashboard';
+  static const String psychoSchedule = '/psycho/schedule';
+  static const String psychoMessages = '/psycho/messages';
+  static const String psychoReports = '/psycho/reports';
+  static const String psychoProfile = '/psycho/profile';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      // Основные страницы
       case home:
         return NoAnimationMaterialPageRoute(builder: (_) => const HomePage());
       case login:
@@ -52,6 +71,8 @@ class AppRouter {
         return NoAnimationMaterialPageRoute(builder: (_) => const ServicesPage());
       case contacts:
         return NoAnimationMaterialPageRoute(builder: (_) => const ContactsPage());
+      
+      // Пациент
       case dashboard:
         return NoAnimationMaterialPageRoute(builder: (_) => const HomePatientPage());
       case profile:
@@ -60,6 +81,22 @@ class AppRouter {
         return NoAnimationMaterialPageRoute(builder: (_) => const ContactsPatientPage());
       case chatPatient:
         return NoAnimationMaterialPageRoute(builder: (_) => const ChatPatientPage());
+      case sessionsCalendar:
+        return NoAnimationMaterialPageRoute(builder: (_) => const SessionsCalendarPage());
+        
+      
+      // Психолог
+      case psychoDashboard:
+        return NoAnimationMaterialPageRoute(builder: (_) => const PsychoDashboardPage());
+      case psychoSchedule:
+        return NoAnimationMaterialPageRoute(builder: (_) => const PsychoSchedulePage());
+      case psychoMessages:
+        return NoAnimationMaterialPageRoute(builder: (_) => const PsychoMessagesPage());
+      case psychoReports:
+        return NoAnimationMaterialPageRoute(builder: (_) => const PsychoReportsPage());
+      case psychoProfile:
+        return NoAnimationMaterialPageRoute(builder: (_) => const PsychoProfilePage());
+
       case articleReader:
         return NoAnimationMaterialPageRoute(builder: (_) => const _ArticleReaderStub());
 
@@ -88,11 +125,44 @@ class AppRouter {
         'Профиль': profile,
         'Дашборд': dashboard,
         'Сообщения': chatPatient,
+        'Календарь сессий': sessionsCalendar,
       };
+
+  /// Прямая навигация по именам маршрутов
+  static void navigateTo(BuildContext context, String routeName) {
+    Navigator.pushNamed(context, routeName);
+  }
+
+  /// Замена текущего маршрута
+  static void replaceWith(BuildContext context, String routeName) {
+    Navigator.pushReplacementNamed(context, routeName);
+  }
+
+  /// Навигация с удалением всех предыдущих маршрутов
+  static void navigateAndRemoveUntil(BuildContext context, String routeName) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      routeName,
+      (route) => false,
+    );
+  }
+
+  /// Навигация с передачей аргументов
+  static void navigateWithArguments(BuildContext context, String routeName, Object arguments) {
+    Navigator.pushNamed(
+      context,
+      routeName,
+      arguments: arguments,
+    );
+  }
 }
 
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
-  NoAnimationMaterialPageRoute({required super.builder, super.settings});
+  NoAnimationMaterialPageRoute({
+    required super.builder,
+    super.settings,
+    super.maintainState = true,
+  });
 
   @override
   Duration get transitionDuration => Duration.zero;
@@ -107,6 +177,10 @@ class _ArticleReaderStub extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Чтение статьи'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: const Center(
         child: Column(
@@ -139,6 +213,10 @@ class NotFoundPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Страница не найдена'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.maybePop(context),
+        ),
       ),
       body: Center(
         child: Column(
@@ -174,7 +252,10 @@ class NotFoundPage extends StatelessWidget {
               onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context, 
                 AppRouter.home, 
-                (route) => false
+                (route) => false,
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               ),
               child: const Text('На главную'),
             ),
