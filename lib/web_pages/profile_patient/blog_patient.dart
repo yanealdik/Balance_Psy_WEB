@@ -1,11 +1,10 @@
-// lib/web_pages/blog/blog_patient.dart
-
 import 'package:flutter/material.dart';
 import '../../../widgets/page_wrapper.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/app_colors.dart';
 import '../../../сore/router/app_router.dart';
 import '../../../widgets/profile_patient/patient_bar.dart';
+import '../../services/directus_service.dart';
 
 class BlogPatientPage extends StatefulWidget {
   const BlogPatientPage({super.key});
@@ -15,6 +14,28 @@ class BlogPatientPage extends StatefulWidget {
 }
 
 class _BlogPatientPageState extends State<BlogPatientPage> {
+  List<Map<String, dynamic>> _articles = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadArticles();
+  }
+
+  Future<void> _loadArticles() async {
+    try {
+      final articles = await DirectusService.getArticles();
+      setState(() {
+        _articles = articles;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading articles: $e');
+      setState(() => _isLoading = false);
+    }
+  }
+
   String _selectedCategory = 'Все';
 
   @override
@@ -58,7 +79,13 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: AppColors.shadow.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -66,8 +93,14 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
             width: 400,
             height: 280,
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
-              image: DecorationImage(image: AssetImage(featured['image'] as String), fit: BoxFit.cover),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              image: DecorationImage(
+                image: AssetImage(featured['image'] as String),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Expanded(
@@ -77,24 +110,71 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: (featured['color'] as Color).withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                    child: Text(featured['category'] as String, style: AppTextStyles.body3.copyWith(color: featured['color'] as Color, fontWeight: FontWeight.w700, fontSize: 12)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: (featured['color'] as Color).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      featured['category'] as String,
+                      style: AppTextStyles.body3.copyWith(
+                        color: featured['color'] as Color,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  Text(featured['title'] as String, style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(
+                    featured['title'] as String,
+                    style: AppTextStyles.h2.copyWith(
+                      fontWeight: FontWeight.w700,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 12),
-                  Text(featured['preview'] as String, style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary, height: 1.5), maxLines: 3, overflow: TextOverflow.ellipsis),
+                  Text(
+                    featured['preview'] as String,
+                    style: AppTextStyles.body1.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Icon(Icons.access_time_outlined, size: 16, color: AppColors.textSecondary),
+                      Icon(
+                        Icons.access_time_outlined,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 6),
-                      Text(featured['readTime'] as String, style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary)),
+                      Text(
+                        featured['readTime'] as String,
+                        style: AppTextStyles.body2.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       const SizedBox(width: 20),
-                      Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textSecondary),
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 6),
-                      Text(featured['date'] as String, style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary)),
+                      Text(
+                        featured['date'] as String,
+                        style: AppTextStyles.body2.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -102,10 +182,20 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
                     onPressed: () => _openArticleReader(ctx, featured),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: Text('Читать статью', style: AppTextStyles.button.copyWith(fontWeight: FontWeight.w700)),
+                    child: Text(
+                      'Читать статью',
+                      style: AppTextStyles.button.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -138,24 +228,53 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
           return Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () => setState(() => _selectedCategory = cat['name'] as String),
+              onTap: () =>
+                  setState(() => _selectedCategory = cat['name'] as String),
               borderRadius: BorderRadius.circular(30),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isActive ? AppColors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: isActive ? AppColors.primary : AppColors.inputBorder.withOpacity(0.5), width: 2),
+                  border: Border.all(
+                    color: isActive
+                        ? AppColors.primary
+                        : AppColors.inputBorder.withOpacity(0.5),
+                    width: 2,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(cat['name'] as String, style: AppTextStyles.body1.copyWith(color: isActive ? Colors.white : AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                    Text(
+                      cat['name'] as String,
+                      style: AppTextStyles.body1.copyWith(
+                        color: isActive ? Colors.white : AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: isActive ? Colors.white.withOpacity(0.2) : AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                      child: Text((cat['count'] as int).toString(), style: AppTextStyles.body3.copyWith(color: isActive ? Colors.white : AppColors.primary, fontWeight: FontWeight.w600)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? Colors.white.withOpacity(0.2)
+                            : AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        (cat['count'] as int).toString(),
+                        style: AppTextStyles.body3.copyWith(
+                          color: isActive ? Colors.white : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -169,7 +288,9 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
 
   Widget _buildFilteredArticles(BuildContext ctx) {
     final all = _getAllArticles();
-    final filtered = _selectedCategory == 'Все' ? all : all.where((a) => a['category'] == _selectedCategory).toList();
+    final filtered = _selectedCategory == 'Все'
+        ? all
+        : all.where((a) => a['category'] == _selectedCategory).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,11 +298,23 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(_selectedCategory == 'Все' ? 'Все статьи' : _selectedCategory, style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              _selectedCategory == 'Все' ? 'Все статьи' : _selectedCategory,
+              style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700),
+            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-              child: Text('${filtered.length} статьи', style: AppTextStyles.body1.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${filtered.length} статьи',
+                style: AppTextStyles.body1.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
@@ -189,7 +322,12 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 20, mainAxisSpacing: 20, childAspectRatio: 1.3),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            childAspectRatio: 1.3,
+          ),
           itemCount: filtered.length,
           itemBuilder: (_, i) {
             final a = filtered[i];
@@ -209,40 +347,119 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
     );
   }
 
-  Widget _buildArticleCard({required BuildContext ctx, required String title, required String category, required String readTime, required String date, required String imagePath, required Color color, required String content}) {
+  Widget _buildArticleCard({
+    required BuildContext ctx,
+    required String title,
+    required String category,
+    required String readTime,
+    required String date,
+    required String imagePath,
+    required Color color,
+    required String content,
+  }) {
     return Container(
       height: 260,
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppColors.shadow.withOpacity(0.06), blurRadius: 15, offset: const Offset(0, 4))]),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.06),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _openArticleReader(ctx, {'title': title, 'category': category, 'readTime': readTime, 'date': date, 'image': imagePath, 'color': color, 'content': content}),
+          onTap: () => _openArticleReader(ctx, {
+            'title': title,
+            'category': category,
+            'readTime': readTime,
+            'date': date,
+            'image': imagePath,
+            'color': color,
+            'content': content,
+          }),
           borderRadius: BorderRadius.circular(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 130,
-                decoration: BoxDecoration(borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)), image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover)),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  image: DecorationImage(
+                    image: AssetImage(imagePath),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)), child: Text(category, style: AppTextStyles.body3.copyWith(color: color, fontWeight: FontWeight.w700, fontSize: 11))),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        category,
+                        style: AppTextStyles.body3.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 10),
-                    Text(title, style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w700, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      title,
+                      style: AppTextStyles.body1.copyWith(
+                        fontWeight: FontWeight.w700,
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(Icons.access_time_outlined, size: 13, color: AppColors.textSecondary),
+                        Icon(
+                          Icons.access_time_outlined,
+                          size: 13,
+                          color: AppColors.textSecondary,
+                        ),
                         const SizedBox(width: 4),
-                        Text(readTime, style: AppTextStyles.body3.copyWith(color: AppColors.textSecondary)),
+                        Text(
+                          readTime,
+                          style: AppTextStyles.body3.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                         const SizedBox(width: 14),
-                        Icon(Icons.calendar_today_outlined, size: 13, color: AppColors.textSecondary),
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 13,
+                          color: AppColors.textSecondary,
+                        ),
                         const SizedBox(width: 4),
-                        Text(date, style: AppTextStyles.body3.copyWith(color: AppColors.textSecondary)),
+                        Text(
+                          date,
+                          style: AppTextStyles.body3.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -273,7 +490,8 @@ class _BlogPatientPageState extends State<BlogPatientPage> {
         'date': '15 ноября 2024',
         'image': 'assets/images/article/calm.png',
         'color': const Color(0xFFFF6B9D),
-        'preview': 'Регулярная практика осознанности перестраивает мозг, снижая стресс и улучшая фокус.',
+        'preview':
+            'Регулярная практика осознанности перестраивает мозг, снижая стресс и улучшая фокус.',
         'content': '''
 # Что такое mindfulness?
 
@@ -313,7 +531,8 @@ Mindfulness — это осознанное пребывание в настоя
         'date': '12 ноя 2024',
         'image': 'assets/images/article/sad.png',
         'color': const Color(0xFF4A90E2),
-        'preview': 'Тревога — это не враг. Это сигнал. Учитесь его понимать и управлять.',
+        'preview':
+            'Тревога — это не враг. Это сигнал. Учитесь его понимать и управлять.',
         'content': '''
 # Тревога — это нормально
 
@@ -398,7 +617,8 @@ Mindfulness — это осознанное пребывание в настоя
         'date': '8 ноя 2024',
         'image': 'assets/images/article/dontAgro.png',
         'color': const Color(0xFFF5A623),
-        'preview': 'Избегание конфликтов разрушает отношения. Учитесь говорить открыто.',
+        'preview':
+            'Избегание конфликтов разрушает отношения. Учитесь говорить открыто.',
         'content': '''
 # Конфликт — это не плохо
 
@@ -434,7 +654,8 @@ Mindfulness — это осознанное пребывание в настоя
         'date': '5 ноя 2024',
         'image': 'assets/images/article/evening.png',
         'color': const Color(0xFF9B59B6),
-        'preview': 'Начните день с заботы о себе — и весь день будет спокойнее.',
+        'preview':
+            'Начните день с заботы о себе — и весь день будет спокойнее.',
         'content': '''
 # Утро задаёт тон всему дню
 
@@ -882,36 +1103,101 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
           Expanded(
             child: Column(
               children: [
-                SizedBox(height: 6, child: LinearProgressIndicator(value: _readingProgress, backgroundColor: AppColors.inputBackground, valueColor: AlwaysStoppedAnimation(widget.article['color'] as Color))),
+                SizedBox(
+                  height: 6,
+                  child: LinearProgressIndicator(
+                    value: _readingProgress,
+                    backgroundColor: AppColors.inputBackground,
+                    valueColor: AlwaysStoppedAnimation(
+                      widget.article['color'] as Color,
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Container(
                       constraints: const BoxConstraints(maxWidth: 1000),
-                      margin: const EdgeInsets.symmetric(horizontal: 60, vertical: 32),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 60,
+                        vertical: 32,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(40),
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppColors.shadow.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 4))]),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.shadow.withOpacity(0.08),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), decoration: BoxDecoration(color: (widget.article['color'] as Color).withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Text(widget.article['category'] as String, style: AppTextStyles.body1.copyWith(color: widget.article['color'] as Color, fontWeight: FontWeight.w700, fontSize: 14))),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: (widget.article['color'] as Color)
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    widget.article['category'] as String,
+                                    style: AppTextStyles.body1.copyWith(
+                                      color: widget.article['color'] as Color,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(height: 20),
-                                Text(widget.article['title'] as String, style: AppTextStyles.h1.copyWith(fontWeight: FontWeight.w700, height: 1.2, fontSize: 38)),
+                                Text(
+                                  widget.article['title'] as String,
+                                  style: AppTextStyles.h1.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.2,
+                                    fontSize: 38,
+                                  ),
+                                ),
                                 const SizedBox(height: 20),
                                 Row(
                                   children: [
-                                    Icon(Icons.access_time_outlined, size: 18, color: AppColors.textSecondary),
+                                    Icon(
+                                      Icons.access_time_outlined,
+                                      size: 18,
+                                      color: AppColors.textSecondary,
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text(widget.article['readTime'] as String, style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary)),
+                                    Text(
+                                      widget.article['readTime'] as String,
+                                      style: AppTextStyles.body1.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
                                     const SizedBox(width: 24),
-                                    Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSecondary),
+                                    Icon(
+                                      Icons.calendar_today_outlined,
+                                      size: 18,
+                                      color: AppColors.textSecondary,
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text(widget.article['date'] as String, style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary)),
+                                    Text(
+                                      widget.article['date'] as String,
+                                      style: AppTextStyles.body1.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -920,8 +1206,20 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
                           const SizedBox(height: 32),
                           Container(
                             padding: const EdgeInsets.all(40),
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppColors.shadow.withOpacity(0.06), blurRadius: 15, offset: const Offset(0, 4))]),
-                            child: _buildArticleContent(widget.article['content'] as String),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.shadow.withOpacity(0.06),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: _buildArticleContent(
+                              widget.article['content'] as String,
+                            ),
                           ),
                           const SizedBox(height: 32),
                           Row(
@@ -929,15 +1227,52 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () => Navigator.pop(context),
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: AppColors.inputBorder))),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                      color: AppColors.inputBorder,
+                                    ),
+                                  ),
+                                ),
                                 icon: const Icon(Icons.arrow_back, size: 18),
-                                label: Text('Назад', style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600)),
+                                label: Text(
+                                  'Назад',
+                                  style: AppTextStyles.body1.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                               ElevatedButton.icon(
                                 onPressed: () => _shareArticle(context),
-                                style: ElevatedButton.styleFrom(backgroundColor: widget.article['color'] as Color, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                                icon: const Icon(Icons.share, color: Colors.white, size: 18),
-                                label: Text('Поделиться', style: AppTextStyles.body1.copyWith(color: Colors.white, fontWeight: FontWeight.w600)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      widget.article['color'] as Color,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.share,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  'Поделиться',
+                                  style: AppTextStyles.body1.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -961,28 +1296,98 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: lines.map((line) {
         if (line.startsWith('# ')) {
-          return Padding(padding: const EdgeInsets.only(top: 28, bottom: 14), child: Text(line.substring(2), style: AppTextStyles.h1.copyWith(fontSize: 30, fontWeight: FontWeight.w700, color: AppColors.textPrimary)));
+          return Padding(
+            padding: const EdgeInsets.only(top: 28, bottom: 14),
+            child: Text(
+              line.substring(2),
+              style: AppTextStyles.h1.copyWith(
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          );
         } else if (line.startsWith('## ')) {
-          return Padding(padding: const EdgeInsets.only(top: 22, bottom: 10), child: Text(line.substring(3), style: AppTextStyles.h2.copyWith(fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.textPrimary)));
+          return Padding(
+            padding: const EdgeInsets.only(top: 22, bottom: 10),
+            child: Text(
+              line.substring(3),
+              style: AppTextStyles.h2.copyWith(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          );
         } else if (line.startsWith('### ')) {
-          return Padding(padding: const EdgeInsets.only(top: 18, bottom: 8), child: Text(line.substring(4), style: AppTextStyles.h3.copyWith(fontSize: 19, fontWeight: FontWeight.w600, color: AppColors.textPrimary)));
+          return Padding(
+            padding: const EdgeInsets.only(top: 18, bottom: 8),
+            child: Text(
+              line.substring(4),
+              style: AppTextStyles.h3.copyWith(
+                fontSize: 19,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          );
         } else if (line.startsWith('- ')) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(padding: const EdgeInsets.only(top: 7, right: 10), child: Container(width: 5, height: 5, decoration: BoxDecoration(color: widget.article['color'] as Color, shape: BoxShape.circle))),
-                Expanded(child: Text(line.substring(2), style: AppTextStyles.body1.copyWith(fontSize: 15.5, height: 1.55, color: AppColors.textPrimary))),
+                Padding(
+                  padding: const EdgeInsets.only(top: 7, right: 10),
+                  child: Container(
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: widget.article['color'] as Color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    line.substring(2),
+                    style: AppTextStyles.body1.copyWith(
+                      fontSize: 15.5,
+                      height: 1.55,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
               ],
             ),
           );
         } else if (line.trim().isEmpty) {
           return const SizedBox(height: 14);
         } else if (line.startsWith('> ')) {
-          return Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(line.substring(2), style: AppTextStyles.body1.copyWith(fontSize: 16, height: 1.6, fontStyle: FontStyle.italic, color: AppColors.textSecondary)));
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              line.substring(2),
+              style: AppTextStyles.body1.copyWith(
+                fontSize: 16,
+                height: 1.6,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          );
         } else {
-          return Padding(padding: const EdgeInsets.symmetric(vertical: 7), child: Text(line, style: AppTextStyles.body1.copyWith(fontSize: 15.5, height: 1.55, color: AppColors.textPrimary)));
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 7),
+            child: Text(
+              line,
+              style: AppTextStyles.body1.copyWith(
+                fontSize: 15.5,
+                height: 1.55,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          );
         }
       }).toList(),
     );
@@ -993,8 +1398,19 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Поделиться статьей', style: AppTextStyles.h2),
-        content: Text('Ссылка скопирована в буфер обмена!', style: AppTextStyles.body1),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('Закрыть', style: AppTextStyles.body1.copyWith(color: AppColors.primary)))],
+        content: Text(
+          'Ссылка скопирована в буфер обмена!',
+          style: AppTextStyles.body1,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Закрыть',
+              style: AppTextStyles.body1.copyWith(color: AppColors.primary),
+            ),
+          ),
+        ],
       ),
     );
   }
