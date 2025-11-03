@@ -1,12 +1,15 @@
+// lib/web_pages/auth/register/step6_finish.dart
+
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/WEB/web_button.dart';
+import '../../../services/api_service.dart';
+import '../../../models/user_register_model.dart';
 
 class Step6Finish extends StatefulWidget {
-  final VoidCallback onComplete;
-
-  const Step6Finish({super.key, required this.onComplete});
+  final UserRegisterModel userData;
+  const Step6Finish({super.key, required this.userData});
 
   @override
   State<Step6Finish> createState() => _Step6FinishState();
@@ -17,6 +20,7 @@ class _Step6FinishState extends State<Step6Finish>
   late AnimationController _animController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  bool _isRegistering = false;
 
   @override
   void initState() {
@@ -44,6 +48,84 @@ class _Step6FinishState extends State<Step6Finish>
   void dispose() {
     _animController.dispose();
     super.dispose();
+  }
+
+  Future<void> _completeRegistration() async {
+    setState(() => _isRegistering = true);
+
+    try {
+      // Валидация данных перед отправкой
+      if (widget.userData.email == null || widget.userData.email!.isEmpty) {
+        throw Exception('Email не указан');
+      }
+      if (widget.userData.password == null ||
+          widget.userData.password!.isEmpty) {
+        throw Exception('Пароль не указан');
+      }
+      if (widget.userData.name == null || widget.userData.name!.isEmpty) {
+        throw Exception('Имя не указано');
+      }
+      if (widget.userData.birthDate == null) {
+        throw Exception('Дата рождения не указана');
+      }
+      if (widget.userData.gender == null || widget.userData.gender!.isEmpty) {
+        throw Exception('Пол не указан');
+      }
+      if (widget.userData.purposes.isEmpty) {
+        throw Exception('Цели не выбраны');
+      }
+
+      // Подготовка interests: если пустой, добавляем хотя бы одну цель
+      final interests = widget.userData.interests.isNotEmpty
+          ? widget.userData.interests
+          : widget.userData.purposes;
+
+      // Отправка запроса на регистрацию
+      final response = await ApiService.register(
+        email: widget.userData.email!,
+        password: widget.userData.password!,
+        passwordRepeat: widget.userData.password!,
+        fullName: widget.userData.name!,
+        dateOfBirth: widget.userData.birthDate!.toIso8601String().split('T')[0],
+        gender: widget.userData.gender!,
+        interests: interests,
+        registrationGoal: widget.userData.purposes.join(', '),
+      );
+
+      setState(() => _isRegistering = false);
+
+      if (mounted) {
+        // Успешная регистрация - переход на дашборд
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/dashboard',
+          (route) => false,
+        );
+
+        // Показываем приветственное сообщение
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Добро пожаловать, ${widget.userData.name}!'),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isRegistering = false);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка регистрации: $e'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -96,11 +178,15 @@ class _Step6FinishState extends State<Step6Finish>
                       width: isMobile ? double.infinity : 340,
                       height: 56,
                       child: WebButton(
-                        text: 'Перейти в личный кабинет',
-                        onPressed: widget.onComplete,
+                        text: _isRegistering
+                            ? 'Завершение регистрации...'
+                            : 'Перейти в личный кабинет',
+                        onPressed: _isRegistering
+                            ? null
+                            : _completeRegistration,
                         isPrimary: true,
                         isFullWidth: true,
-                        showArrow: true,
+                        showArrow: !_isRegistering,
                       ),
                     ),
                   ],

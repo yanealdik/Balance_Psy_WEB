@@ -17,6 +17,8 @@ import '../../web_pages/profile_patient/home_patient.dart';
 import '../../web_pages/profile_patient/profile_patient.dart';
 import '../../web_pages/profile_patient/contacts_patient.dart';
 import '../../web_pages/profile_patient/chat_patient.dart';
+import '../../web_pages/profile_patient/edit_profile/edit_user.dart';
+import '../../web_pages/profile_patient/setting/setting_page.dart';
 
 /// Централизованный роутинг для веб-версии BalancePsy
 class AppRouter {
@@ -37,6 +39,8 @@ class AppRouter {
   static const String chatPatient = '/chat-patient';
   static const String forgotPassword = '/forgot-password';
   static const String changePassword = '/change-password';
+  static const String editProfile = '/edit-profile';
+  static const String settingsRoute = '/settings';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -86,6 +90,16 @@ class AppRouter {
         return NoAnimationMaterialPageRoute(
           builder: (_) => const _ArticleReaderStub(),
         );
+      case editProfile:
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const EditProfilePage(),
+        );
+
+      case settingsRoute:
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const SettingsPage(),
+        );
+
       case forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
 
