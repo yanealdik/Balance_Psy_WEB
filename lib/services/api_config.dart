@@ -1,5 +1,4 @@
 class ApiConfig {
-  // ✅ ИСПРАВЛЕНО: добавлен /api префикс
   static const String baseUrl = 'http://localhost:8080/api';
 
   // Endpoints
@@ -26,4 +25,3 @@ class ApiConfig {
     'Authorization': 'Bearer $token',
   };
 }
-q
