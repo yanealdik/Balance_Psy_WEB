@@ -1,5 +1,5 @@
 class ApiConfig {
-  // Замените на ваш реальный IP адрес или используйте localhost
+  // ✅ ИСПРАВЛЕНО: добавлен /api префикс
   static const String baseUrl = 'http://localhost:8080/api';
 
   // Endpoints
@@ -8,6 +8,12 @@ class ApiConfig {
   static const String register = '/auth/register';
   static const String login = '/auth/login';
   static const String getCurrentUser = '/users/me';
+  static const String updateProfile = '/users/me';
+  static const String changePassword = '/users/me/password';
+  static const String uploadAvatar = '/users/me/avatar';
+  static const String deleteAccount = '/users/me';
+  static const String forgotPassword = '/auth/forgot-password';
+  static const String resetPassword = '/auth/reset-password';
 
   // Headers
   static Map<String, String> get headers => {
@@ -20,3 +26,4 @@ class ApiConfig {
     'Authorization': 'Bearer $token',
   };
 }
+q
