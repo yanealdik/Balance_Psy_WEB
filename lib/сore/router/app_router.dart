@@ -1,10 +1,12 @@
 // lib/core/router/app_router.dart
 
 import 'package:flutter/material.dart';
+import '../../web_pages/auth/littleThings/forgot_password_page.dart';
 import '../../web_pages/home/home_page.dart';
 import '../../web_pages/auth/login_page.dart';
 import '../../web_pages/auth/register/register_main.dart';
 import '../../web_pages/about/about_page.dart';
+import '../../web_pages/profile_patient/setting/change_password_page.dart';
 import '../../web_pages/psychologists/psychologists_page.dart';
 import '../../web_pages/psychologists/psychologist_detail.dart';
 import '../../web_pages/profile_patient/blog_patient.dart';
@@ -33,6 +35,8 @@ class AppRouter {
   static const String profile = '/profile';
   static const String contactsPatient = '/contacts-patient';
   static const String chatPatient = '/chat-patient';
+  static const String forgotPassword = '/forgot-password';
+  static const String changePassword = '/change-password';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -41,54 +45,85 @@ class AppRouter {
       case login:
         return NoAnimationMaterialPageRoute(builder: (_) => const LoginPage());
       case register:
-        return NoAnimationMaterialPageRoute(builder: (_) => const RegisterMain());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const RegisterMain(),
+        );
       case about:
         return NoAnimationMaterialPageRoute(builder: (_) => const AboutPage());
       case psychologists:
-        return NoAnimationMaterialPageRoute(builder: (_) => const PsychologistsPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const PsychologistsPage(),
+        );
       case blog:
-        return NoAnimationMaterialPageRoute(builder: (_) => const BlogPatientPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const BlogPatientPage(),
+        );
       case services:
-        return NoAnimationMaterialPageRoute(builder: (_) => const ServicesPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const ServicesPage(),
+        );
       case contacts:
-        return NoAnimationMaterialPageRoute(builder: (_) => const ContactsPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const ContactsPage(),
+        );
       case dashboard:
-        return NoAnimationMaterialPageRoute(builder: (_) => const HomePatientPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const HomePatientPage(),
+        );
       case profile:
-        return NoAnimationMaterialPageRoute(builder: (_) => const ProfilePatientPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const ProfilePatientPage(),
+        );
       case contactsPatient:
-        return NoAnimationMaterialPageRoute(builder: (_) => const ContactsPatientPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const ContactsPatientPage(),
+        );
       case chatPatient:
-        return NoAnimationMaterialPageRoute(builder: (_) => const ChatPatientPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const ChatPatientPage(),
+        );
       case articleReader:
-        return NoAnimationMaterialPageRoute(builder: (_) => const _ArticleReaderStub());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const _ArticleReaderStub(),
+        );
+      case forgotPassword:
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
+
+      case changePassword:
+        return MaterialPageRoute(builder: (_) => const ChangePasswordPage());
 
       default:
         // Динамические маршруты
         if (settings.name?.startsWith('/psychologists/') == true) {
           final id = settings.name!.split('/').last;
-          return NoAnimationMaterialPageRoute(builder: (_) => PsychologistDetail(id: id));
+          return NoAnimationMaterialPageRoute(
+            builder: (_) => PsychologistDetail(id: id),
+          );
         }
         if (settings.name?.startsWith('/blog/') == true) {
           final id = settings.name!.split('/').last;
-          return NoAnimationMaterialPageRoute(builder: (_) => ArticleDetail(id: id));
+          return NoAnimationMaterialPageRoute(
+            builder: (_) => ArticleDetail(id: id),
+          );
         }
-        return NoAnimationMaterialPageRoute(builder: (_) => const NotFoundPage());
+        return NoAnimationMaterialPageRoute(
+          builder: (_) => const NotFoundPage(),
+        );
     }
   }
 
   /// Получить имя маршрута для навигации
   static Map<String, String> get routes => {
-        'Главная': home,
-        'О нас': about,
-        'Специалисты': psychologists,
-        'Услуги': services,
-        'Блог': blog,
-        'Контакты': contacts,
-        'Профиль': profile,
-        'Дашборд': dashboard,
-        'Сообщения': chatPatient,
-      };
+    'Главная': home,
+    'О нас': about,
+    'Специалисты': psychologists,
+    'Услуги': services,
+    'Блог': blog,
+    'Контакты': contacts,
+    'Профиль': profile,
+    'Дашборд': dashboard,
+    'Сообщения': chatPatient,
+  };
 }
 
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
@@ -105,9 +140,7 @@ class _ArticleReaderStub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Чтение статьи'),
-      ),
+      appBar: AppBar(title: const Text('Чтение статьи')),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -137,18 +170,12 @@ class NotFoundPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Страница не найдена'),
-      ),
+      appBar: AppBar(title: const Text('Страница не найдена')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 80,
-              color: Colors.grey,
-            ),
+            const Icon(Icons.error_outline, size: 80, color: Colors.grey),
             const SizedBox(height: 20),
             const Text(
               '404',
@@ -159,10 +186,7 @@ class NotFoundPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Страница не найдена',
-              style: TextStyle(fontSize: 24),
-            ),
+            const Text('Страница не найдена', style: TextStyle(fontSize: 24)),
             const SizedBox(height: 8),
             const Text(
               'Запрошенная страница не существует',
@@ -172,9 +196,9 @@ class NotFoundPage extends StatelessWidget {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context, 
-                AppRouter.home, 
-                (route) => false
+                context,
+                AppRouter.home,
+                (route) => false,
               ),
               child: const Text('На главную'),
             ),

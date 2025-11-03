@@ -1,6 +1,7 @@
 // lib/services/user_service.dart
 
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import '../models/user_model.dart';
 import 'api_config.dart';
@@ -21,7 +22,7 @@ class UserService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
         if (data['success'] == true && data['data'] != null) {
           return UserModel.fromJson(data['data']);
         } else {
@@ -70,7 +71,7 @@ class UserService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
         if (data['success'] == true && data['data'] != null) {
           return UserModel.fromJson(data['data']);
         } else {
@@ -80,7 +81,7 @@ class UserService {
         await TokenStorage.deleteToken();
         throw Exception('Сессия истекла');
       } else {
-        final error = jsonDecode(response.body);
+        final error = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception(error['message'] ?? 'Ошибка обновления профиля');
       }
     } catch (e) {
@@ -124,7 +125,7 @@ class UserService {
         await TokenStorage.deleteToken();
         throw Exception('Сессия истекла');
       } else if (response.statusCode == 400) {
-        final error = jsonDecode(response.body);
+        final error = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception(error['message'] ?? 'Неверный текущий пароль');
       } else {
         throw Exception('Ошибка смены пароля');
@@ -163,7 +164,7 @@ class UserService {
 
   /// Загрузить аватар
   static Future<String> uploadAvatar(
-    List<int> imageBytes,
+    Uint8List imageBytes,
     String fileName,
   ) async {
     try {
@@ -187,7 +188,7 @@ class UserService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
         return data['data']['avatarUrl'] as String;
       } else {
         throw Exception('Ошибка загрузки аватара');
@@ -209,7 +210,7 @@ class UserService {
       if (response.statusCode == 200) {
         return;
       } else {
-        final error = jsonDecode(response.body);
+        final error = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception(error['message'] ?? 'Ошибка отправки кода');
       }
     } catch (e) {
@@ -243,7 +244,7 @@ class UserService {
       if (response.statusCode == 200) {
         return;
       } else {
-        final error = jsonDecode(response.body);
+        final error = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception(error['message'] ?? 'Ошибка сброса пароля');
       }
     } catch (e) {
