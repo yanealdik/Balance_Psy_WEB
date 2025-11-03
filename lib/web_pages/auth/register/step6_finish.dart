@@ -75,10 +75,8 @@ class _Step6FinishState extends State<Step6Finish>
         throw Exception('Цели не выбраны');
       }
 
-      // Подготовка interests: если пустой, добавляем хотя бы одну цель
-      final interests = widget.userData.interests.isNotEmpty
-          ? widget.userData.interests
-          : widget.userData.purposes;
+      // ИСПРАВЛЕНО: Используем purposes как interests
+      final interests = widget.userData.purposes;
 
       // Отправка запроса на регистрацию
       final response = await ApiService.register(
@@ -95,17 +93,13 @@ class _Step6FinishState extends State<Step6Finish>
       setState(() => _isRegistering = false);
 
       if (mounted) {
-        // Успешная регистрация - переход на дашборд
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/dashboard',
-          (route) => false,
-        );
+        // Успешная регистрация - переход на LOGIN
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
 
-        // Показываем приветственное сообщение
+        // Показываем сообщение о необходимости войти
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Добро пожаловать, ${widget.userData.name}!'),
+            content: Text('Регистрация завершена! Войдите в аккаунт.'),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
@@ -180,7 +174,7 @@ class _Step6FinishState extends State<Step6Finish>
                       child: WebButton(
                         text: _isRegistering
                             ? 'Завершение регистрации...'
-                            : 'Перейти в личный кабинет',
+                            : 'Завершить регистрацию',
                         onPressed: _isRegistering
                             ? null
                             : _completeRegistration,

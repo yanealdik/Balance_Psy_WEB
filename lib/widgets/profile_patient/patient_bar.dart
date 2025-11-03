@@ -4,14 +4,44 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../сore/router/app_router.dart';
+import '../../services/user_service.dart';
+import '../../services/api_service.dart';
+import '../../models/user_model.dart';
 
-class PatientBar extends StatelessWidget {
+class PatientBar extends StatefulWidget {
   final String currentRoute;
 
-  const PatientBar({
-    super.key,
-    required this.currentRoute,
-  });
+  const PatientBar({super.key, required this.currentRoute});
+
+  @override
+  State<PatientBar> createState() => _PatientBarState();
+}
+
+class _PatientBarState extends State<PatientBar> {
+  UserModel? _user;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final user = await UserService.getCurrentUser();
+      if (mounted) {
+        setState(() {
+          _user = user;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +90,17 @@ class PatientBar extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Balance', style: AppTextStyles.logo.copyWith(fontSize: 20)),
-                Text('Psy', style: AppTextStyles.logo.copyWith(color: AppColors.primary, fontSize: 20)),
+                Text(
+                  'Balance',
+                  style: AppTextStyles.logo.copyWith(fontSize: 20),
+                ),
+                Text(
+                  'Psy',
+                  style: AppTextStyles.logo.copyWith(
+                    color: AppColors.primary,
+                    fontSize: 20,
+                  ),
+                ),
               ],
             ),
           ],
@@ -71,6 +110,61 @@ class PatientBar extends StatelessWidget {
   }
 
   Widget _buildUserInfo() {
+    if (_isLoading) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withOpacity(0.2),
+              ),
+              child: const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: AppColors.inputBackground,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    width: 50,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: AppColors.inputBackground,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -80,25 +174,55 @@ class PatientBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 2),
-              image: const DecorationImage(
-                image: AssetImage('assets/images/avatar/aldiyar.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          _user?.avatarUrl != null
+              ? Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary, width: 2),
+                    image: DecorationImage(
+                      image: NetworkImage(_user!.avatarUrl!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              : Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary, width: 2),
+                    color: AppColors.primary.withOpacity(0.1),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _user?.fullName[0].toUpperCase() ?? 'U',
+                      style: AppTextStyles.h3.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Альдияр', style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w600)),
-                Text('Пациент', style: AppTextStyles.body3.copyWith(color: AppColors.textSecondary)),
+                Text(
+                  _user?.fullName ?? 'Пользователь',
+                  style: AppTextStyles.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  'Пациент',
+                  style: AppTextStyles.body3.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
               ],
             ),
           ),
@@ -137,7 +261,7 @@ class PatientBar extends StatelessWidget {
 
     return Column(
       children: menuItems.map((item) {
-        final isActive = currentRoute == item.route;
+        final isActive = widget.currentRoute == item.route;
         return _buildMenuButton(
           context: context,
           item: item,
@@ -160,7 +284,7 @@ class PatientBar extends StatelessWidget {
               label: 'Профиль',
               route: AppRouter.profile,
             ),
-            isActive: currentRoute == AppRouter.profile,
+            isActive: widget.currentRoute == AppRouter.profile,
           ),
           const SizedBox(height: 8),
           _buildMenuButton(
@@ -196,10 +320,15 @@ class PatientBar extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: isActive ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+              color: isActive
+                  ? AppColors.primary.withOpacity(0.1)
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               border: isActive
-                  ? Border.all(color: AppColors.primary.withOpacity(0.2), width: 1)
+                  ? Border.all(
+                      color: AppColors.primary.withOpacity(0.2),
+                      width: 1,
+                    )
                   : null,
             ),
             child: Row(
@@ -213,7 +342,9 @@ class PatientBar extends StatelessWidget {
                 Text(
                   item.label,
                   style: AppTextStyles.body1.copyWith(
-                    color: isActive ? AppColors.primary : AppColors.textSecondary,
+                    color: isActive
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
@@ -226,7 +357,7 @@ class PatientBar extends StatelessWidget {
   }
 
   void _handleNavigation(BuildContext context, String route, bool isLogout) {
-    if (currentRoute == route && !isLogout) return;
+    if (widget.currentRoute == route && !isLogout) return;
 
     if (isLogout) {
       _showLogoutDialog(context);
@@ -236,7 +367,6 @@ class PatientBar extends StatelessWidget {
     _navigateTo(context, route);
   }
 
-  // Добавлен недостающий метод
   void _navigateTo(BuildContext context, String route) {
     Navigator.pushNamed(context, route);
   }
@@ -246,20 +376,31 @@ class PatientBar extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Выход', style: AppTextStyles.h3),
-        content: Text('Вы действительно хотите выйти?', style: AppTextStyles.body1),
+        content: Text(
+          'Вы действительно хотите выйти?',
+          style: AppTextStyles.body1,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Отмена', style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary)),
+            child: Text(
+              'Отмена',
+              style: AppTextStyles.body1.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRouter.home,
-                (route) => false,
-              );
+              await ApiService.logout();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRouter.home,
+                  (route) => false,
+                );
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             child: Text('Выйти', style: AppTextStyles.button),
