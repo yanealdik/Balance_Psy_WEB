@@ -1,3 +1,4 @@
+import 'package:balance_psy/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
@@ -99,11 +100,28 @@ class _RegisterMainState extends State<RegisterMain>
   }
 
   Future<void> _completeRegistration() async {
-    // TODO: Отправка данных регистрации на backend
-    // POST /api/auth/register
-    // Body: _userData.toJson()
+    try {
+      await ApiService.register(
+        email: _userData.email!,
+        password: _userData.password!,
+        passwordRepeat: _userData.password!,
+        fullName: _userData.name!,
+        dateOfBirth: _userData.birthDate!.toIso8601String().split('T')[0],
+        gender: _userData.gender!,
+        interests: _userData.interests,
+        registrationGoal: _userData.purposes.join(', '),
+      );
 
-    Navigator.pushReplacementNamed(context, '/dashboard');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка регистрации: $e')));
+      }
+    }
   }
 
   @override
@@ -156,7 +174,7 @@ class _RegisterMainState extends State<RegisterMain>
                           onNext: _nextStep,
                           onBack: _previousStep,
                         ),
-                        Step6Finish(onComplete: _completeRegistration),
+                        Step6Finish(userData: _userData),
                       ],
                     ),
                   ),
@@ -202,7 +220,7 @@ class _RegisterMainState extends State<RegisterMain>
                     onNext: _nextStep,
                     onBack: _previousStep,
                   ),
-                  Step6Finish(onComplete: _completeRegistration),
+                  Step6Finish(userData: _userData),
                 ],
               ),
             ),
@@ -214,14 +232,14 @@ class _RegisterMainState extends State<RegisterMain>
 
   Widget _buildStepsNavigator(bool isTablet) {
     return Container(
-      width: isTablet ? 280 : 360,
+      width: isTablet ? 300 : 360,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary.withOpacity(0.05),
-            AppColors.primaryLight.withOpacity(0.1),
+            AppColors.primary.withOpacity(0.04),
+            AppColors.primaryLight.withOpacity(0.08),
             Colors.white,
           ],
         ),
@@ -236,7 +254,7 @@ class _RegisterMainState extends State<RegisterMain>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(isTablet ? 24 : 40),
+            padding: EdgeInsets.all(isTablet ? 28 : 40),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -273,8 +291,8 @@ class _RegisterMainState extends State<RegisterMain>
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(
-                vertical: 24,
-                horizontal: isTablet ? 16 : 24,
+                vertical: 28,
+                horizontal: isTablet ? 20 : 28,
               ),
               itemCount: _steps.length,
               itemBuilder: (context, index) {
@@ -283,19 +301,19 @@ class _RegisterMainState extends State<RegisterMain>
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(isTablet ? 24 : 40),
+            padding: EdgeInsets.all(isTablet ? 28 : 40),
             child: Column(
               children: [
                 const Divider(height: 1),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     Icon(
                       Icons.help_outline,
-                      size: 16,
+                      size: 18,
                       color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Text(
                       'Нужна помощь?',
                       style: AppTextStyles.body3.copyWith(
@@ -318,7 +336,7 @@ class _RegisterMainState extends State<RegisterMain>
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -330,7 +348,7 @@ class _RegisterMainState extends State<RegisterMain>
               : null,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: EdgeInsets.all(isTablet ? 12 : 16),
+            padding: EdgeInsets.all(isTablet ? 14 : 16),
             decoration: BoxDecoration(
               color: isActive
                   ? AppColors.primary.withOpacity(0.1)
@@ -350,8 +368,8 @@ class _RegisterMainState extends State<RegisterMain>
             child: Row(
               children: [
                 Container(
-                  width: isTablet ? 40 : 48,
-                  height: isTablet ? 40 : 48,
+                  width: isTablet ? 44 : 48,
+                  height: isTablet ? 44 : 48,
                   decoration: BoxDecoration(
                     color: isActive
                         ? AppColors.primary
@@ -362,17 +380,17 @@ class _RegisterMainState extends State<RegisterMain>
                   ),
                   child: Center(
                     child: isCompleted
-                        ? const Icon(Icons.check, color: Colors.white, size: 20)
+                        ? const Icon(Icons.check, color: Colors.white, size: 22)
                         : Icon(
                             step.icon,
                             color: isActive
                                 ? Colors.white
                                 : AppColors.textSecondary,
-                            size: 20,
+                            size: 22,
                           ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +406,7 @@ class _RegisterMainState extends State<RegisterMain>
                               : AppColors.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         step.subtitle,
                         style: AppTextStyles.body3.copyWith(
@@ -408,7 +426,7 @@ class _RegisterMainState extends State<RegisterMain>
 
   Widget _buildTopBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -432,11 +450,14 @@ class _RegisterMainState extends State<RegisterMain>
           const Spacer(),
           Text(
             'Шаг ${_currentStep + 1} из ${_steps.length}',
-            style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.body2.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
           SizedBox(
-            width: 120,
+            width: 140,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: LinearProgressIndicator(
@@ -456,7 +477,7 @@ class _RegisterMainState extends State<RegisterMain>
 
   Widget _buildMobileProgress() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -471,18 +492,23 @@ class _RegisterMainState extends State<RegisterMain>
                 IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: _previousStep,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
+              if (_currentStep > 0) const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   _steps[_currentStep].title,
-                  style: AppTextStyles.h3,
-                  textAlign: TextAlign.center,
+                  style: AppTextStyles.h3.copyWith(fontSize: 18),
+                  textAlign: _currentStep > 0
+                      ? TextAlign.start
+                      : TextAlign.center,
                 ),
               ),
-              const SizedBox(width: 48),
+              if (_currentStep == 0) const SizedBox(width: 48),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(

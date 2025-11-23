@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../сore/router/app_router.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../сore/router/app_router.dart';
 
 class WebFooter extends StatelessWidget {
   const WebFooter({super.key});
