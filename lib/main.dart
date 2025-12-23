@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'theme/app_colors.dart';
 import 'сore/router/app_router.dart';
 
-/// Entry point для веб-версии BalancePsy
-/// Запуск: flutter run -d chrome -t lib/web_main.dart
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const BalancePsyWeb());
