@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:balance_psy/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/WEB/web_button.dart';
 import '../../../models/user_register_model.dart';
 
 class Step4Verification extends StatefulWidget {
@@ -60,11 +61,19 @@ class _Step4VerificationState extends State<Step4Verification> {
       _resendTimer = 60;
     });
 
-    // TODO: Отправка кода на email
-    // POST /api/auth/send-verification-code
-    // Body: { "email": widget.userData.email }
-
-    _startResendTimer();
+    try {
+      await ApiService.sendVerificationCode(
+        email: widget.userData.email!,
+        isParentEmail: widget.userData.isMinor,
+      );
+      _startResendTimer();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
+    }
   }
 
   void _startResendTimer() {
@@ -88,18 +97,24 @@ class _Step4VerificationState extends State<Step4Verification> {
 
     setState(() => _isVerifying = true);
 
-    // TODO: Проверка кода на бэкенде
-    // POST /api/auth/verify-code
-    // Body: { "email": widget.userData.email, "code": code }
-    // Response: { "valid": true/false }
+    try {
+      await ApiService.verifyCode(
+        email: widget.userData.email!,
+        code: code,
+        isParentEmail: widget.userData.isMinor,
+      );
 
-    await Future.delayed(const Duration(seconds: 1)); // Симуляция запроса
-
-    setState(() => _isVerifying = false);
-
-    // Если код верный
-    widget.userData.verificationCode = code;
-    widget.onNext();
+      setState(() => _isVerifying = false);
+      widget.userData.verificationCode = code;
+      widget.onNext();
+    } catch (e) {
+      setState(() => _isVerifying = false);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Неверный код: $e')));
+      }
+    }
   }
 
   void _onCodeChanged(int index, String value) {
@@ -124,20 +139,25 @@ class _Step4VerificationState extends State<Step4Verification> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 24 : 60),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 24 : 48,
+          vertical: isMobile ? 32 : 48,
+        ),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(
+            maxWidth: isMobile ? double.infinity : 700,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(isMobile),
-              SizedBox(height: isMobile ? 32 : 48),
+              SizedBox(height: isMobile ? 40 : 56),
               _buildCodeInput(isMobile),
-              SizedBox(height: isMobile ? 24 : 32),
+              const SizedBox(height: 32),
               _buildResendSection(isMobile),
-              SizedBox(height: isMobile ? 24 : 32),
+              const SizedBox(height: 24),
               _buildInfoCard(isMobile),
-              SizedBox(height: isMobile ? 32 : 48),
+              SizedBox(height: isMobile ? 40 : 56),
               _buildButtons(isMobile),
             ],
           ),
@@ -154,10 +174,13 @@ class _Step4VerificationState extends State<Step4Verification> {
           'Подтверждение email',
           style: isMobile ? AppTextStyles.h2 : AppTextStyles.h1,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         RichText(
           text: TextSpan(
-            style: AppTextStyles.body1.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.body1.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
             children: [
               const TextSpan(text: 'Мы отправили код на '),
               TextSpan(
@@ -187,8 +210,8 @@ class _Step4VerificationState extends State<Step4Verification> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(6, (index) {
             return SizedBox(
-              width: isMobile ? 45 : 60,
-              height: isMobile ? 55 : 70,
+              width: isMobile ? 48 : 64,
+              height: isMobile ? 60 : 72,
               child: TextField(
                 controller: _codeControllers[index],
                 focusNode: _focusNodes[index],
@@ -196,7 +219,7 @@ class _Step4VerificationState extends State<Step4Verification> {
                 keyboardType: TextInputType.number,
                 maxLength: 1,
                 style: AppTextStyles.h2.copyWith(
-                  fontSize: isMobile ? 24 : 32,
+                  fontSize: isMobile ? 24 : 28,
                   fontWeight: FontWeight.w600,
                 ),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -243,9 +266,15 @@ class _Step4VerificationState extends State<Step4Verification> {
           else
             TextButton.icon(
               onPressed: _sendVerificationCode,
-              icon: const Icon(Icons.refresh, size: 18),
+              icon: const Icon(Icons.refresh, size: 20),
               label: const Text('Отправить код повторно'),
-              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+              ),
             ),
         ],
       ),
@@ -264,7 +293,7 @@ class _Step4VerificationState extends State<Step4Verification> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.mail_outline, color: AppColors.primary, size: 24),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,11 +305,12 @@ class _Step4VerificationState extends State<Step4Verification> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   'Проверьте папку "Спам" или дождитесь окончания таймера, чтобы отправить код повторно.',
                   style: AppTextStyles.body2.copyWith(
                     color: AppColors.textSecondary,
+                    height: 1.5,
                   ),
                 ),
               ],
@@ -300,7 +330,7 @@ class _Step4VerificationState extends State<Step4Verification> {
           SizedBox(
             width: 140,
             height: 56,
-            child: CustomButton(
+            child: WebButton(
               text: 'Назад',
               onPressed: widget.onBack,
               isPrimary: false,
@@ -309,15 +339,16 @@ class _Step4VerificationState extends State<Step4Verification> {
           ),
           const SizedBox(width: 16),
         ],
-        SizedBox(
-          width: isMobile ? double.infinity : 220,
-          height: 56,
-          child: CustomButton(
-            text: _isVerifying ? 'Проверка...' : 'Подтвердить',
-            onPressed: _isVerifying || code.length != 6 ? null : _verifyCode,
-            isPrimary: true,
-            isFullWidth: true,
-            showArrow: !_isVerifying,
+        Expanded(
+          child: SizedBox(
+            height: 56,
+            child: WebButton(
+              text: _isVerifying ? 'Проверка...' : 'Подтвердить',
+              onPressed: _isVerifying || code.length != 6 ? null : _verifyCode,
+              isPrimary: true,
+              isFullWidth: true,
+              showArrow: !_isVerifying,
+            ),
           ),
         ),
       ],
